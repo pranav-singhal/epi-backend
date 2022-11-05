@@ -7,6 +7,7 @@
 
 const Message = require("../models/Message");
 const Transaction = require("../models/Transaction");
+const WalletService = require("../services/WalletService");
 
 module.exports = {
   create: async (req, res) => {
@@ -15,6 +16,7 @@ module.exports = {
     let txResponse = null;
     const sender = _.get(req.body, 'sender');
     const recipient = _.get(req.body, 'recipient');
+    const senderPublicKey = _.get(req.body, 'meta.publicKey');
     
     const txHash = _.get(req.body, 'txDetails.hash', '');
     const txAmount = _.get(req.body, 'txDetails.amount');
@@ -59,6 +61,17 @@ module.exports = {
             transactionId: txResponse.id
         })
 
+        if (messageResponse) {
+            const notificationResponse = await NotificationService.sendNotification(msgType, {
+                amount: txAmount,
+                recipient: WalletService.getPublicKeyFromUser(recipient),
+                from: sender
+            })
+            console.log("notificationResponse: ", notificationResponse);
+            // check if user is subscribed
+            // if subscribed - send notification
+        }
+
     }
     return res.json({data: {
         ...messageResponse,
@@ -85,7 +98,7 @@ module.exports = {
 
     const threads = await Message.getThreads(sender);
 
-    res.json({threads});
+    return res.json({threads});
   }
 };
 
