@@ -16,69 +16,60 @@ module.exports = {
     let txResponse = null;
     const sender = _.get(req.body, 'sender');
     const recipient = _.get(req.body, 'recipient');
-    const senderPublicKey = _.get(req.body, 'meta.publicKey');
-    
+
     const txHash = _.get(req.body, 'txDetails.hash', '');
     const txAmount = _.get(req.body, 'txDetails.amount');
+    const qrCodeId = _.get(req.body, 'txDetails.qrCodeId');
 
-      // TODO: add payload validations  
-      if (msgType === 'recieved') {
-        const txFrom = sender;
-        const txTo = recipient;
-          
-        
-        txResponse = await Transaction.createNewTransaction({
-            from: txFrom,
-            to: txTo,
-            hash: txHash,
-            amount: txAmount,
-            status: 'pending'
-        })
+    // TODO: add payload validations
+    if (msgType === 'recieved') {
+      const txFrom = sender;
+      const txTo = recipient;
 
-        
+      txResponse = await Transaction.createNewTransaction({
+        from: txFrom,
+        to: txTo,
+        hash: txHash,
+        amount: txAmount,
+        status: 'pending',
+        qrCodeId
+      });
+    }
 
+    if (msgType === 'request') {
+      txFrom = recipient;
+      txTo = sender;
+
+      txResponse = await Transaction.createNewTransaction({
+        from: txFrom,
+        to: txTo,
+        hash: '',
+        amount: txAmount,
+        status: 'unconfirmed'
+      });
+    }
+
+    if (txResponse) {
+      // create message
+      messageResponse = await Message.createNewMessage({
+        type: msgType,
+        sender,
+        recipient,
+        transactionId: txResponse.id
+      });
+
+      if (messageResponse) {
+        await NotificationService.sendNotification(msgType, {
+          amount: txAmount,
+          recipient: WalletService.getPublicKeyFromUser(recipient),
+          from: sender
+        });
       }
-
-      if (msgType === 'request') {
-        txFrom = recipient;
-        txTo = sender;
-
-        txResponse = await Transaction.createNewTransaction({
-            from: txFrom,
-            to: txTo,
-            hash: '',
-            amount: txAmount,
-            status: 'unconfirmed'
-        })
-      }
-
-      if (txResponse) {
-        // create message
-        messageResponse = await Message.createNewMessage({
-            type: msgType,
-            sender,
-            recipient,
-            transactionId: txResponse.id
-        })
-
-        if (messageResponse) {
-            const notificationResponse = await NotificationService.sendNotification(msgType, {
-                amount: txAmount,
-                recipient: WalletService.getPublicKeyFromUser(recipient),
-                from: sender
-            })
-            console.log("notificationResponse: ", notificationResponse);
-            // check if user is subscribed
-            // if subscribed - send notification
-        }
-
     }
     return res.json({data: {
-        ...messageResponse,
-        transaction: txResponse
-    }})
-
-
+      ...messageResponse,
+      transaction: txResponse
+    }});
   },
 
   getMessagesWithFilters: async (req, res) => {
