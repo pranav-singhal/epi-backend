@@ -58,7 +58,7 @@ module.exports = {
       if (messageResponse) {
         await NotificationService.sendNotification(msgType, {
           amount: txAmount,
-          recipient: WalletService.getPublicKeyFromUser(recipient),
+          recipient: await WalletService.getPublicKeyFromUser(recipient),
           from: sender
         });
       }
