@@ -66,6 +66,26 @@ module.exports = {
     }})
 
 
+  },
+
+  getMessagesWithFilters: async (req, res) => {
+      console.log(req.query);
+      const sender = _.get(req, 'query.sender');
+      const recipient = _.get(req, 'query.recipient');
+
+      const messages = await Message.getMessages(sender, recipient);
+
+      res.json({messages});
+
+  },
+
+  getThreadsForSender: async (req, res) => {
+    const sender = _.get(req, 'query.sender');
+    console.log('sneder:', sender);
+
+    const threads = await Message.getThreads(sender);
+
+    res.json({threads});
   }
 };
 

@@ -21,7 +21,9 @@ module.exports.routes = {
 
   '/': { view: 'pages/homepage' },
   'POST /message': 'MessageController.create',
-  'PUT /transaction/:id': 'TransactionController.update'
+  'PUT /transaction/:id': 'TransactionController.update',
+  'GET /messages': 'MessageController.getMessagesWithFilters',
+  'GET /threads': 'MessageController.getThreadsForSender'
 
 
   /***************************************************************************

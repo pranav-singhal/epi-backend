@@ -40,6 +40,35 @@ module.exports = {
 
     return dbResponse.rows[0];
     
+  },
+
+  getMessages: async (sender, recipient) => {
+    const query = `Select * from message m inner join transaction t on m."transactionId" = t."id" where m."sender" = $1 and m."recipient" = $2`;
+
+    const dbResponse = await sails
+                          .getDatastore()
+                          .sendNativeQuery(query, [sender, recipient]) ;
+
+    return dbResponse.rows;
+  },
+
+  getThreads: async (sender) => {
+    const query = `SELECT sender, recipient from message where "sender" = $1 or "recipient" = $1`;
+
+
+    const dbResponse = await sails
+                          .getDatastore()
+                          .sendNativeQuery(query, [sender]);
+    let users = [];
+
+    _.forEach(dbResponse.rows, (item) => {
+        users = [...users, ..._.values(item)]
+    })
+    console.log(users, dbResponse.rows);
+    users = _.uniq(users);
+    _.remove(users, user => user === sender);
+
+    return users;
   }
 
 };
