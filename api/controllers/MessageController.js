@@ -5,9 +5,6 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const Message = require("../models/Message");
-const Transaction = require("../models/Transaction");
-const WalletService = require("../services/WalletService");
 
 module.exports = {
   create: async (req, res) => {
@@ -73,13 +70,21 @@ module.exports = {
   },
 
   getMessagesWithFilters: async (req, res) => {
-      console.log(req.query);
-      const sender = _.get(req, 'query.sender');
-      const recipient = _.get(req, 'query.recipient');
 
-      const messages = await Message.getMessages(sender, recipient);
+    const sender = _.get(req, 'query.sender');
+    const recipient = _.get(req, 'query.recipient');
+    const qrcode = _.get(req, 'query.qrcode');
 
-      res.json({messages});
+
+    if (qrcode) {
+      const messages = await Message.getMessagesByQrCode(qrcode);
+
+      return res.json({messages});
+    }
+
+    const messages = await Message.getMessages(sender, recipient);
+
+    res.json({messages});
 
   },
 

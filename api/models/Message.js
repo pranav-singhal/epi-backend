@@ -39,7 +39,7 @@ module.exports = {
                           .sendNativeQuery(query, [opts.type, opts.sender, opts.recipient, opts.transactionId || 0, Date.now(), Date.now()]);
 
     return dbResponse.rows[0];
-    
+
   },
 
   getMessages: async (sender, recipient) => {
@@ -47,28 +47,36 @@ module.exports = {
 
     let dbResponseSentMessages = await sails
                           .getDatastore()
-                          .sendNativeQuery(query, [sender, recipient]) ;
-    
+                          .sendNativeQuery(query, [sender, recipient]);
+
     dbResponseSentMessages = dbResponseSentMessages.rows;
 
     let dbResponseRecievedMessages = await sails
                           .getDatastore()
-                          .sendNativeQuery(query, [recipient, sender]) ;
+                          .sendNativeQuery(query, [recipient, sender]);
 
-    
+
     dbResponseRecievedMessages = dbResponseRecievedMessages.rows;
-    console.log('dbResponseRecievedMessages', dbResponseRecievedMessages);                          
     dbResponseSentMessages = _.map(dbResponseSentMessages, (_message) => {
-        return {..._message, type: 'sent'}
-      })
+      return {..._message, type: 'sent'};
+    });
 
-      dbResponseRecievedMessages = _.map(dbResponseRecievedMessages, (_message) => {
-        return {..._message, type: 'recieved'}
-      })
+    dbResponseRecievedMessages = _.map(dbResponseRecievedMessages, (_message) => {
+      return {..._message, type: 'recieved'};
+    });
 
 
 
     return [...dbResponseRecievedMessages, ...dbResponseSentMessages];
+  },
+
+  getMessagesByQrCode: async (qrCode) => {
+    const query = `SELECT * from message m inner join transaction t on m."transactionId" = t."id" where t."qrcode_id" = $1`;
+    let dbResponse = await sails
+      .getDatastore()
+      .sendNativeQuery(query, [qrCode]);
+
+    return dbResponse.rows;
   },
 
   getThreads: async (sender) => {
@@ -81,8 +89,8 @@ module.exports = {
     let users = [];
 
     _.forEach(dbResponse.rows, (item) => {
-        users = [...users, ..._.values(item)]
-    })
+      users = [...users, ..._.values(item)];
+    });
     console.log(users, dbResponse.rows);
     users = _.uniq(users);
     _.remove(users, user => user === sender);

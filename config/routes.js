@@ -24,7 +24,9 @@ module.exports.routes = {
   'PUT /transaction/:id': 'TransactionController.update',
   'GET /messages': 'MessageController.getMessagesWithFilters',
   'GET /threads': 'MessageController.getThreadsForSender',
-  'GET /transaction/qrcode/:id': 'TransactionController.getByQRCodeId'
+  'GET /transaction/qrcode/:id': 'TransactionController.getByQRCodeId',
+  'GET /users': 'UserController.getAll',
+  'POST /user': 'UserController.create'
 
 
   /***************************************************************************
