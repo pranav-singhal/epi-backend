@@ -17,6 +17,7 @@ module.exports = {
     const txHash = _.get(req.body, 'txDetails.hash', '');
     const txAmount = _.get(req.body, 'txDetails.amount');
     const qrCodeId = _.get(req.body, 'txDetails.qrCodeId');
+    let notificationError = null;
 
     // TODO: add payload validations
     if (msgType === 'recieved') {
@@ -56,17 +57,23 @@ module.exports = {
       });
 
       if (messageResponse) {
-        await NotificationService.sendNotification(msgType, {
-          amount: txAmount,
-          transactionId: txResponse.id,
-          recipient: await WalletService.getPublicKeyFromUser(recipient),
-          from: sender
-        });
+        try {
+          await NotificationService.sendNotification(msgType, {
+            amount: txAmount,
+            transactionId: txResponse.id,
+            recipient: await WalletService.getPublicKeyFromUser(recipient),
+            from: sender
+          });
+        } catch(e) {
+            notificationError = e;
+        }
+        
       }
     }
     return res.json({data: {
       ...messageResponse,
-      transaction: txResponse
+      transaction: txResponse,
+      notificationError
     }});
   },
 
