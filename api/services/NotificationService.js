@@ -14,6 +14,8 @@ const vapidKeys = {
   privateKey: sails.config.vapid.privatekey,
 };
 
+console.log("testing ====>", sails.config);
+
 webPush.setVapidDetails(
   'mailto:pranv@consolelabs.in',
   vapidKeys.publicKey,
