@@ -26,7 +26,9 @@ module.exports.routes = {
   'GET /threads': 'MessageController.getThreadsForSender',
   'GET /transaction/qrcode/:id': 'TransactionController.getByQRCodeId',
   'GET /users': 'UserController.getAll',
-  'POST /user': 'UserController.create'
+  'POST /user': 'UserController.create',
+  'POST /user/subscription': 'UserSubscriptionController.create',
+  'GET /user/:username/subscription': 'UserSubscriptionController.get'
 
 
   /***************************************************************************

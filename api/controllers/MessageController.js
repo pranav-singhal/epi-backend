@@ -61,13 +61,13 @@ module.exports = {
           await NotificationService.sendNotification(msgType, {
             amount: txAmount,
             transactionId: txResponse.id,
-            recipient: await WalletService.getPublicKeyFromUser(recipient),
+            recipient: recipient,
             from: sender
           });
         } catch(e) {
             notificationError = e;
         }
-        
+
       }
     }
     return res.json({data: {
