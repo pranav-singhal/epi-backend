@@ -5,16 +5,16 @@ name: Publish to Elastic Beanstalk
 
 on:
   push:
-    branches: [ main ]
+    branches: [ feature/upgrading-node-version ]
   pull_request:
-    branches: [ main ]
+    branches: [ feature/upgrading-node-version ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
