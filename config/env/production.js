@@ -98,6 +98,10 @@ module.exports = {
     // cascadeOnDestroy: false,
 
   },
+  vapid: {
+    privatekey: '',
+    publickey: ''
+  },
 
 
 
