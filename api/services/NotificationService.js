@@ -10,11 +10,11 @@ const UserSubscription = require('../models/UserSubscription');
 
 const vapidKeys = {
   publicKey:
-    sails.config.vapid.publickey,
-  privateKey: sails.config.vapid.privatekey,
+    sails.config.vapid.publickey || procces.env.WALLET_API_VAPID_PUBLICKEY,
+  privateKey: sails.config.vapid.privatekey || procces.env.WALLET_API_VAPID_PRIVATKEY,
 };
 
-console.log("testing vapid ====>", sails.config.vapid);
+console.log("testing vapid ====>", sails.config.vapid, procces.env.WALLET_API_VAPID_PRIVATKEY, procces.env.WALLET_API_VAPID_PUBLICKEY);
 
 webPush.setVapidDetails(
   'mailto:pranv@consolelabs.in',
