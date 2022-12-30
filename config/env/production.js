@@ -19,7 +19,7 @@
  * https://sailsjs.com/docs/concepts/deployment
  */
 
- module.exports = require('env-lift').load('wallet_api', {
+ module.exports = require('env-lift').load('wallet-api', {
 
 
   /**************************************************************************
