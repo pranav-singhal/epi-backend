@@ -33,8 +33,8 @@ jobs:
         with:
           aws_access_key: ${{secrets.AWS_ACCESS_KEY_ID}}
           aws_secret_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          application_name: "wallet-api"
-          environment_name: "wallet-api-a"
+          application_name: "wallet-api-version-2"
+          environment_name: "wallet-api-c"
           region: "us-west-2"
           version_label: "as-${{ github.sha }}"
           deployment_package: ./deploy.zip
