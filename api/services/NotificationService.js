@@ -14,11 +14,11 @@ const vapidKeys = {
   privateKey: sails.config.vapid.privatekey,
 };
 
-webPush.setVapidDetails(
-  'mailto:pranv@consolelabs.in',
-  vapidKeys.publicKey,
-  vapidKeys.privateKey,
-);
+// webPush.setVapidDetails(
+//   'mailto:pranv@consolelabs.in',
+//   vapidKeys.publicKey,
+//   vapidKeys.privateKey,
+// );
 
 module.exports = {
   sendNotification: async (type, opts) => {
@@ -44,10 +44,10 @@ module.exports = {
     if (userSubscription) {
       const subscriptionObject = JSON.parse(_.get(userSubscription, 'subscription'));
 
-      await webPush.sendNotification(
-          subscriptionObject,
-          notificationBody
-      )
+      // await webPush.sendNotification(
+      //     subscriptionObject,
+      //     notificationBody
+      // )
     }
 
     const recipientAddress = await WalletService.getPublicKeyFromUser(recipient)
