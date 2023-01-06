@@ -42,10 +42,7 @@ module.exports = {
 
     get: async (req, res) => {
         const username = req.param('username');
-        console.log(req.params);
         const userSubscription = await UserSubscription.getSubscriptionForUser(username);
-
-
 
         return res.json({userSubscription})
     }

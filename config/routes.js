@@ -28,7 +28,8 @@ module.exports.routes = {
   'GET /users': 'UserController.getAll',
   'POST /user': 'UserController.create',
   'POST /user/subscription': 'UserSubscriptionController.create',
-  'GET /user/:username/subscription': 'UserSubscriptionController.get'
+  'GET /user/:username/subscription': 'UserSubscriptionController.get',
+  'POST /temp': 'MessageController.tmpFunction'
 
 
   /***************************************************************************

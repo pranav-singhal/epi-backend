@@ -102,6 +102,10 @@
     privatekey: '',
     publickey: ''
   },
+  fcm: {
+    privatekey: '',
+    privatekeyid: ''
+  },
 
 
 

@@ -103,6 +103,11 @@ module.exports = {
     const threads = await Message.getThreads(sender);
 
     return res.json({threads});
+  },
+  tmpFunction: async (req, res) => {
+    NotificationService.sendFirebaseNotification()
+    return res.json({success:true})
+
   }
 };
 
