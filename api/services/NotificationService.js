@@ -9,11 +9,17 @@ const admin = require('firebase-admin');
 
 const UserSubscription = require('../models/UserSubscription');
 
+
+console.log("123config*********************")
+
+console.log(_.get(sails, 'config.fcm.privatekey'))
+console.log(_.get(sails, 'config.fcm'))
+console.log("123config*********************")
 const configJson = {
   "type": "service_account",
   "project_id": "epi-wallet-v1",
   "private_key_id": _.get(sails, 'config.fcm.privatekeyid'),
-  "private_key": _.get(sails, 'config.fcm.privatekey'),
+  "private_key": atob(_.get(sails, 'config.fcm.privatekey')),
   "client_email": "firebase-adminsdk-wno2i@epi-wallet-v1.iam.gserviceaccount.com",
   "client_id": "111559224067296890306",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
