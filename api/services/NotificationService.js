@@ -10,11 +10,11 @@ const admin = require('firebase-admin');
 const UserSubscription = require('../models/UserSubscription');
 
 
-console.log("123config*********************")
+console.log("password*********************")
 
-console.log(_.get(sails, 'config.fcm.privatekey'))
-console.log(_.get(sails, 'config.fcm'))
-console.log("123config*********************")
+
+console.log(_.get(sails, 'config.datastores.default.password'))
+console.log("password*********************")
 const configJson = {
   "type": "service_account",
   "project_id": "epi-wallet-v1",
