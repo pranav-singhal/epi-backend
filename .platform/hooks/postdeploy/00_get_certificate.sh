@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-sudo certbot -n -d wallet-api.consolelabs.in --nginx --agree-tos --email arvind@consolelabs.in
+sudo certbot -n -d epi-api-c.consolelabs.in --nginx --agree-tos --email arvind@consolelabs.in

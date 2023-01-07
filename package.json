@@ -11,7 +11,6 @@
     "@sailshq/socket.io-redis": "^5.2.0",
     "env-lift": "^0.0.3",
     "ethers": "^5.7.2",
-    "fcm-notification": "^2.0.0",
     "firebase-admin": "^11.4.1",
     "grunt": "1.0.4",
     "sails": "^1.5.3",
@@ -37,6 +36,6 @@
   "author": "pranavsinghal",
   "license": "",
   "engines": {
-    "node": "^16"
+    "node": "16.15.0"
   }
 }
