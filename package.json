@@ -36,6 +36,6 @@
   "author": "pranavsinghal",
   "license": "",
   "engines": {
-    "node": "16.15.0"
+    "node": "^16"
   }
 }
