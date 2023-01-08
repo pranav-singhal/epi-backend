@@ -8,7 +8,7 @@ const WalletUser = require("../models/WalletUser");
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-VAPID_PRIVATE_KEY = 'zW5uf78YdQNVJLJx7VwMfw3OUCEpc3wO2eaYghZrtq4';
+
 module.exports = {
     create: async (req, res) => {
         const {

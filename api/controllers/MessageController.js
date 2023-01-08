@@ -65,6 +65,7 @@ module.exports = {
             from: sender
           });
         } catch(e) {
+          console.log("notification error: ", e)
             notificationError = e;
         }
 

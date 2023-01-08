@@ -7,14 +7,6 @@ const notificationIdentifier = 'wallet-notif';
 const webPush = require('web-push');
 const admin = require('firebase-admin');
 
-const UserSubscription = require('../models/UserSubscription');
-
-
-console.log("password*********************")
-
-
-console.log(_.get(sails, 'config.datastores.default.password'))
-console.log("password*********************")
 const configJson = {
   "type": "service_account",
   "project_id": "epi-wallet-v1",
@@ -70,10 +62,22 @@ module.exports = {
     if (userSubscription) {
       const subscriptionObject = JSON.parse(_.get(userSubscription, 'subscription'));
 
-      await webPush.sendNotification(
+      if (_.get(subscriptionObject, 'type', 'web') === 'ios') {
+        
+        await NotificationService.sendFirebaseNotification({
+          amount:_.get(opts, 'amount'),
+          type,
+          from: _.get(opts, 'from'),
+          token: _.get(subscriptionObject, 'token')
+        })
+
+      } else {
+
+        await webPush.sendNotification(
           subscriptionObject,
           notificationBody
       )
+      }
     }
 
     const recipientAddress = await WalletService.getPublicKeyFromUser(recipient)
@@ -98,28 +102,30 @@ module.exports = {
     });
 
   },
-  sendFirebaseNotification: () => {
-    app.messaging()
+  sendFirebaseNotification: ({amount, type, from, token}) => {
+    return app.messaging()
     .send({
     
-      "name": "testing",
+      "name": "IOS Notification",
       "data": {
         "notificationDataKey": "notificationDataValue"
       },
       "notification": {
-        "title": "from epi wallet",
-      "body": "someone keeps sending u you some coin",
+        "title": "EPI: Someone misses you ",
+      "body": type === 'request' ? `${from} has requested ${amount} eth from you`: `${from} has sent you ${amount} eth`,
       "image": "stringhttps://picsum.photos/200/300"
       },
-      "token": "czQ5fPxU1UHDsrtXQ9yp2k:APA91bGWZmcAHt-TMNDKk-IeDPYtuW5z8FruC1tszwEHXmWzkB-AisRs-P0jv0r7hJUZFBZCb1Pv9x8lmjxiC-1JxqnBNBzuif2JezRmBUQk3i1za4Qh4W46Q1q7TCmeu5wfZHQxzbeE"
+      "token": token
     
     })
     .then((response) => {
       // Response is a message ID string.
       console.log('Successfully sent message:', response);
+      return true;
     })
     .catch((error) => {
       console.log('Error sending message:', error);
+      return false
     })
   }
 };
