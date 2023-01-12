@@ -26,7 +26,7 @@ jobs:
 
       - name: Generate deployment package
         working-directory: ./
-        run: zip -r deploy.zip * .ebextensions .platform -x "**node_modules**"
+        run: zip -r deploy.zip * .ebextensions .platform .npmrc -x "**node_modules**"
 
       - name: Beanstalk Deploy for app
         uses: einaregilsson/beanstalk-deploy@v10
