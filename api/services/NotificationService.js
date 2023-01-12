@@ -6,6 +6,7 @@ const channelSigner = new ethers.Wallet(NOTIFICATION_CHANNEL_PVT_KEY);
 const notificationIdentifier = 'wallet-notif';
 const webPush = require('web-push');
 const admin = require('firebase-admin');
+const atob = require("atob");
 
 const configJson = {
   "type": "service_account",

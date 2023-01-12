@@ -9,6 +9,7 @@
     "@sailshq/connect-redis": "^3.2.1",
     "@sailshq/lodash": "^3.10.3",
     "@sailshq/socket.io-redis": "^5.2.0",
+    "atob": "^2.1.2",
     "env-lift": "^0.0.3",
     "ethers": "^5.7.2",
     "firebase-admin": "^11.4.1",
@@ -36,6 +37,6 @@
   "author": "pranavsinghal",
   "license": "",
   "engines": {
-    "node": "^16"
+    "node": "^14"
   }
 }
