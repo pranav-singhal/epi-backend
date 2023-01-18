@@ -25,7 +25,9 @@ module.exports = {
 
     status: { type: 'string' },
 
-    qrcode_id: { type: 'string' }
+    qrcode_id: { type: 'string' },
+
+    chainId: {type: 'number'}
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
@@ -39,11 +41,11 @@ module.exports = {
   },
 
   createNewTransaction:  async (opts) => {
-    const query = `INSERT INTO transaction ("from", "to", "hash", "amount", "status", "qrcode_id", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
+    const query = `INSERT INTO transaction ("from", "to", "hash", "amount", "status", "qrcode_id", "chainId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
 
     const dbResponse = await sails
       .getDatastore()
-      .sendNativeQuery(query, [opts.from, opts.to, opts.hash, opts.amount, opts.status, opts.qrCodeId || null, Date.now(), Date.now()]);
+      .sendNativeQuery(query, [opts.from, opts.to, opts.hash, opts.amount, opts.status, opts.qrCodeId || null, opts.chainId || 0,Date.now(), Date.now()]);
 
     return dbResponse.rows[0];
   },
@@ -63,7 +65,7 @@ module.exports = {
       valuesArray.push(opts.hash);
     }
 
-    valuesArray.push(id)
+    valuesArray.push(id);
 
     const dbResponse = await sails.getDatastore()
       .sendNativeQuery(query, valuesArray);

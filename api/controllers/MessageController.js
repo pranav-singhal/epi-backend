@@ -17,6 +17,7 @@ module.exports = {
     const txHash = _.get(req.body, 'txDetails.hash', '');
     const txAmount = _.get(req.body, 'txDetails.amount');
     const qrCodeId = _.get(req.body, 'txDetails.qrCodeId');
+    const chainId = _.get(req.body, 'txDetails.chainId', 0);
     let notificationError = null;
 
     // TODO: add payload validations
@@ -30,7 +31,8 @@ module.exports = {
         hash: txHash,
         amount: txAmount,
         status: 'pending',
-        qrCodeId
+        qrCodeId,
+        chainId
       });
     }
 
@@ -43,7 +45,8 @@ module.exports = {
         to: txTo,
         hash: '',
         amount: txAmount,
-        status: 'unconfirmed'
+        status: 'unconfirmed',
+        chainId,
       });
     }
 
@@ -83,6 +86,7 @@ module.exports = {
     const sender = _.get(req, 'query.sender');
     const recipient = _.get(req, 'query.recipient');
     const qrcode = _.get(req, 'query.qrcode');
+    const chainId = _.get(req, 'query.chainId');
 
 
     if (qrcode) {
@@ -91,7 +95,7 @@ module.exports = {
       return res.json({messages});
     }
 
-    const messages = await Message.getMessages(sender, recipient);
+    const messages = await Message.getMessages(sender, recipient, chainId);
 
     res.json({messages});
 
