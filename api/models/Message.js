@@ -80,11 +80,14 @@ module.exports = {
   },
 
   getThreadsWithDetails: async (sender) => {
-    const query = `SELECT wallet_user.username, wallet_user.avatar, wallet_user.address from message inner join wallet_user on message.sender = wallet_user."username" where message.sender = $1 or message.recipient = $1`;
+    const query = `SELECT wallet_user.username, wallet_user.avatar, wallet_user.address from message inner join wallet_user on (message.sender = wallet_user."username" or message.recipient = wallet_user.username) where message.sender = $1 or message.recipient = $1`;
     const dbResponse = await sails
       .getDatastore()
       .sendNativeQuery(query, [sender]);
-    return dbResponse.rows || [];
+    const threadUsers = _.filter(dbResponse.rows, _user => {
+      return _user.username !== sender;
+    })
+    return _.unique(threadUsers || [], false, 'username');
   },
 
   getThreads: async (sender) => {
