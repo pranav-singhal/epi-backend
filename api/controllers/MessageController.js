@@ -103,21 +103,16 @@ module.exports = {
 
   getThreadsForSender: async (req, res) => {
     const sender = _.get(req, 'query.sender');
-    const populateDetails = _.get(req, 'query.populate_details', false)
+    const populateDetails = _.get(req, 'query.populate_details', false);
 
     if (populateDetails) {
-      const threads = await Message.getThreadsWithDetails(sender)
+      const threads = await Message.getThreadsWithDetails(sender);
       return res.json({threads});
     }
 
     const threads = await Message.getThreads(sender );
 
     return res.json({threads});
-  },
-  tmpFunction: async (req, res) => {
-    NotificationService.sendFirebaseNotification()
-    return res.json({success:true})
-
   }
 };
 
