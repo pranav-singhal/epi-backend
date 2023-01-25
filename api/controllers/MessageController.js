@@ -103,9 +103,14 @@ module.exports = {
 
   getThreadsForSender: async (req, res) => {
     const sender = _.get(req, 'query.sender');
-    console.log('sneder:', sender);
+    const populateDetails = _.get(req, 'query.populate_details', false)
 
-    const threads = await Message.getThreads(sender);
+    if (populateDetails) {
+      const threads = await Message.getThreadsWithDetails(sender)
+      return res.json({threads});
+    }
+
+    const threads = await Message.getThreads(sender );
 
     return res.json({threads});
   },
