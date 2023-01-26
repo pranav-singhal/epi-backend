@@ -5,9 +5,9 @@ name: Publish to Elastic Beanstalk
 
 on:
   push:
-    branches: [ main ]
+    branches: [ staging ]
   pull_request:
-    branches: [ main ]
+    branches: [ staging ]
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
           aws_access_key: ${{secrets.AWS_ACCESS_KEY_ID}}
           aws_secret_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           application_name: "epi-api"
-          environment_name: "epi-api-a"
+          environment_name: "epi-api-staging"
           region: "ap-south-1"
           version_label: "as-${{ github.sha }}"
           deployment_package: ./deploy.zip
