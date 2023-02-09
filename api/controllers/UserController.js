@@ -13,6 +13,24 @@ module.exports = {
     return res.json({users: usersByUsername});
   },
 
+  getUserByUsername: async (req, res) => {
+
+    const username = req.param('username');
+    try {
+      const userDetails = await WalletUser.getUserByUsername(username);
+
+      if (_.isEmpty(userDetails)) {
+        res.status(404);
+        return res.json({message: 'user not found'});
+      }
+
+      return res.json({[username]: userDetails});
+    } catch (e) {
+      res.status(400);
+      return  res.json({error: e});
+    }
+  },
+
   create: async (req, res) => {
 
     const newUserResponse = await WalletUser.createNewUser({
