@@ -55,7 +55,6 @@ module.exports = {
                           .getDatastore()
                           .sendNativeQuery(query, [recipient, sender, chainId]);
 
-
     dbResponseRecievedMessages = dbResponseRecievedMessages.rows;
     dbResponseSentMessages = _.map(dbResponseSentMessages, (_message) => {
       return {..._message, type: 'sent'};
@@ -86,7 +85,7 @@ module.exports = {
       .sendNativeQuery(query, [sender]);
     const threadUsers = _.filter(dbResponse.rows, _user => {
       return _user.username !== sender;
-    })
+    });
     return _.unique(threadUsers || [], false, 'username');
   },
 
@@ -102,7 +101,7 @@ module.exports = {
     _.forEach(dbResponse.rows, (item) => {
       users = [...users, ..._.values(item)];
     });
-    console.log(users, dbResponse.rows);
+
     users = _.uniq(users);
     _.remove(users, user => user === sender);
 
