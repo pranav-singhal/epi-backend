@@ -48,5 +48,18 @@ module.exports = {
     } catch (e) {
       return {error: true, message: e}
     }
+  },
+
+  getUserByUserId: async (userId) => {
+    const query = `SELECT * from wallet_user where id = $1`;
+    try {
+      const dbResponse = await sails
+      .getDatastore()
+      .sendNativeQuery(query, [userId]);
+      return dbResponse.rows[0];
+    } catch (e) {
+      return {error: true, message: e}
+    
   }
+}
 };

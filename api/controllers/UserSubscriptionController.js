@@ -17,14 +17,15 @@ module.exports = {
         } = req.body;
 
         const userDetails = await WalletUser.getUserByUsername(username)
+        const userId = userDetails?.id;
 
-        const userSubscription = await UserSubscription.getSubscriptionForUser(username);
+        const userSubscription = await UserSubscription.getSubscriptionForUser(userId);
 
         if (userSubscription) {
 
             if(userSubscription.subscription  !== subscription) {
                 // update the subscription object
-                const updatedUserSubscription = await UserSubscription.updateUserSubscription(username, subscription);
+                const updatedUserSubscription = await UserSubscription.updateUserSubscription(userId, subscription);
                 return res.json({userDetails, updatedUserSubscription})
             }
 
@@ -35,15 +36,21 @@ module.exports = {
             }})
         }
 
-        const newUserSubscription = await UserSubscription.createNewSubscriptionForUser(username, subscription);
+        const newUserSubscription = await UserSubscription.createNewSubscriptionForUser(userId, subscription);
 
         return res.json({userDetails, newUserSubscription})
     },
 
     get: async (req, res) => {
         const username = req.param('username');
-        const userSubscription = await UserSubscription.getSubscriptionForUser(username);
-
+        const userDetails = await WalletUser.getUserByUsername(username)
+        const userId = userDetails?.id;
+        if (!userId) {
+            res.status(400);
+            res.json({message: "user not found"})
+        }
+        
+        const userSubscription = await UserSubscription.getSubscriptionForUser(userId);
         return res.json({userSubscription})
     }
 }

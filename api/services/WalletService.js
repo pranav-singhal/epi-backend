@@ -1,6 +1,7 @@
 module.exports = {
   getPublicKeyFromUser: async (user) => {
-    const userDetails = await WalletUser.getAllUsersByUsername();
-    return _.get(userDetails, [user.toLowerCase(), 'address'], '');
+    const userDetails = await WalletUser.getUserByUserId(user);
+    
+    return _.get(userDetails, ['address'], '');
   }
 };

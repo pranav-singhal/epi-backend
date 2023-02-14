@@ -16,6 +16,7 @@ module.exports = {
       hash,
       status
     });
+    // TODO - send notification update the transaction update
 
     return res.json(dbResponse);
   },

@@ -43,8 +43,8 @@ module.exports = {
   sendNotification: async (type, opts) => {
 
     // type(defined from receiver's perspective):
-    // - request opts: {amount: float, recipient: username, from: username}
-    // - received opts: {amount: float, recipient: username, from: username}
+    // - request opts: {amount: float, recipient: userId, from: userId}
+    // - received opts: {amount: float, recipient: userId, from: userId}
     const recipient = _.get(opts, 'recipient');
 
     const userSubscription = await UserSubscription.getSubscriptionForUser(recipient);
@@ -64,7 +64,7 @@ module.exports = {
       const subscriptionObject = JSON.parse(_.get(userSubscription, 'subscription'));
 
       if (_.get(subscriptionObject, 'type', 'web') === 'ios') {
-        
+
         await NotificationService.sendFirebaseNotification({
           amount:_.get(opts, 'amount'),
           type,
@@ -77,7 +77,7 @@ module.exports = {
         await webPush.sendNotification(
           subscriptionObject,
           notificationBody
-      )
+        );
       }
     }
 
@@ -103,21 +103,23 @@ module.exports = {
     });
 
   },
-  sendFirebaseNotification: ({amount, type, from, token}) => {
+
+  sendFirebaseNotification: async ({amount, type, from, token}) => {
+    const userDetails = await WalletUser.getUserByUserId(from);
+    const username = userDetails?.username || 'anonymous';
+
     return app.messaging()
     .send({
-    
       "name": "IOS Notification",
       "data": {
         "notificationDataKey": "notificationDataValue"
       },
       "notification": {
-        "title": "EPI: Someone misses you ",
-      "body": type === 'request' ? `${from} has requested ${amount} eth from you`: `${from} has sent you ${amount} eth`,
-      "image": "stringhttps://picsum.photos/200/300"
+        "title": `EPI: new messager from ${username}`,
+        "body": type === 'request' ? `Send me ${amount} Eth`: `I have sent you ${amount} Eth`,
+        "image": "https://picsum.photos/200/300"
       },
       "token": token
-    
     })
     .then((response) => {
       // Response is a message ID string.

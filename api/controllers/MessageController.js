@@ -5,20 +5,38 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const WalletUser = require("../models/WalletUser");
+
 
 module.exports = {
   create: async (req, res) => {
     const msgType = _.get(req.body, 'type');
     let messageResponse = {message: 'invalid msg type'};
     let txResponse = null;
-    const sender = _.get(req.body, 'sender');
-    const recipient = _.get(req.body, 'recipient');
+    let sender = _.get(req.body, 'sender');
+    let recipient = _.get(req.body, 'recipient');
 
     const txHash = _.get(req.body, 'txDetails.hash', '');
     const txAmount = _.get(req.body, 'txDetails.amount');
     const qrCodeId = _.get(req.body, 'txDetails.qrCodeId');
     const chainId = _.get(req.body, 'txDetails.chainId', 0);
     let notificationError = null;
+
+    const senderDetails = await WalletUser.getUserByUsername(sender);
+    const recipientDetails = await WalletUser.getUserByUsername(recipient);
+
+    if (!senderDetails?.id) {
+      res.status = 400;
+      return res.json({message: "invalid sender"})
+    }
+
+    if (!recipientDetails?.id) {
+      res.status = 400;
+      return res.json({message: "invalid sender"})
+    }
+
+    sender = senderDetails.id;
+    recipient = recipientDetails.id;
 
     // TODO: add payload validations
     if (msgType === 'recieved') {
@@ -88,6 +106,18 @@ module.exports = {
     const qrcode = _.get(req, 'query.qrcode');
     const chainId = _.get(req, 'query.chainId');
 
+    const senderDetails = await WalletUser.getUserByUsername(sender);
+    const recipientDetails = await WalletUser.getUserByUsername(recipient);
+
+    if (!senderDetails?.id) {
+      res.status = 400;
+      return res.json({message: "invalid sender"})
+    }
+
+    if (!recipientDetails?.id) {
+      res.status = 400;
+      return res.json({message: "invalid recipeint"})
+    }
 
     if (qrcode) {
       const messages = await Message.getMessagesByQrCode(qrcode);
@@ -95,7 +125,7 @@ module.exports = {
       return res.json({messages});
     }
 
-    const messages = await Message.getMessages(sender, recipient, chainId);
+    const messages = await Message.getMessages(senderDetails?.id, recipientDetails?.id, chainId);
 
     res.json({messages});
 
@@ -103,14 +133,19 @@ module.exports = {
 
   getThreadsForSender: async (req, res) => {
     const sender = _.get(req, 'query.sender');
+    const senderDetails = await WalletUser.getUserByUsername(sender);
+    if (!senderDetails?.id) {
+      res.status = 400;
+      return res.json({message: "invalid sender"})
+    }
     const populateDetails = _.get(req, 'query.populate_details', false);
 
     if (populateDetails) {
-      const threads = await Message.getThreadsWithDetails(sender);
+      const threads = await Message.getThreadsWithDetails(senderDetails.id);
       return res.json({threads});
     }
 
-    const threads = await Message.getThreads(sender );
+    const threads = await Message.getThreads(senderDetails.id );
 
     return res.json({threads});
   }
