@@ -14,6 +14,7 @@
     "ethers": "^5.7.2",
     "firebase-admin": "^11.4.1",
     "grunt": "1.0.4",
+    "node-fetch": "2",
     "sails": "^1.5.3",
     "sails-hook-grunt": "^5.0.0",
     "sails-hook-orm": "^4.0.0",
