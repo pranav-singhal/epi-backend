@@ -106,6 +106,9 @@
     privatekey: '',
     privatekeyid: ''
   },
+  contractadmiwallet: {
+    pvtkey: ''
+  },
 
 
 
