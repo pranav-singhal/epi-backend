@@ -7,7 +7,7 @@ const provider = new ethers.providers.InfuraProvider(
   '3e3bc546283842be8c2f1a9bcb2e1885' //process.env.INFURA_API_KEY
 );
   const signer = new ethers.Wallet(
-    _.get(sails, 'config.contractadmiwallet.pvtkey'),
+    _.get(sails, 'config.contractadminwallet.pvtkey'),
     provider
  );
 

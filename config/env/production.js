@@ -106,7 +106,7 @@
     privatekey: '',
     privatekeyid: ''
   },
-  contractadmiwallet: {
+  contractadminwallet: {
     pvtkey: ''
   },
 
