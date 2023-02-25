@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-sudo certbot -n -d *.consolelabs.in --nginx --agree-tos --email arvind@consolelabs.in
+EB_ENV=$(/opt/elasticbeanstalk/bin/get-config environment -k APP_DOMAIN)
+sudo certbot -n -d $EB_ENV --nginx --agree-tos --email arvind@consolelabs.in
