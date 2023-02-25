@@ -29,7 +29,7 @@ module.exports.routes = {
   'POST /user': 'UserController.create', // done
   'POST /user/subscription': 'UserSubscriptionController.create', // done
   'GET /user/:username/subscription': 'UserSubscriptionController.get', // done
-  'POST /temp': 'MessageController.tmpFunction', // done
+  'POST /temp': 'MessageController.tempFunction', // done
   'GET /users/:username' : 'UserController.getUserByUsername' // done
 
 

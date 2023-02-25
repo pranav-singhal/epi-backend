@@ -148,6 +148,10 @@ module.exports = {
     const threads = await Message.getThreads(senderDetails.id );
 
     return res.json({threads});
+  },
+
+  tempFunction: async () => {
+    console.log('temp function called')
   }
 };
 

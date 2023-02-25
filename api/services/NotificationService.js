@@ -130,5 +130,8 @@ module.exports = {
       console.log('Error sending message:', error);
       return false
     })
+  },
+  tempFunction: () => {
+    console.log("temp function")
   }
 };
