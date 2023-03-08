@@ -5,7 +5,7 @@
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
- module.exports = {
+module.exports = {
 //   CREATE TABLE vpa_transactions(
 //     ID INT PRIMARY KEY NOT null,
 //     tx_hash text not null,
@@ -34,8 +34,8 @@
       fiat_amount,
       fiat_name: 'INR',
       status: 'pending',
-      meta: {message: "Please wait while we process your payment"}
-    })
+      meta: {message: 'Please wait while we process your payment'}
+    });
   },
 
   updateTransactionStatus: async (txId, _status, meta) => {
@@ -43,14 +43,30 @@
 
     const dbResponse = await sails
     .getDatastore()
-    .sendNativeQuery(query, [txId, _status, meta])
+    .sendNativeQuery(query, [txId, _status, meta]);
 
     return dbResponse.rows[0];
   },
 
-  updateTransactionStatusToDeclined: (txId, meta) => VpaTransaction.updateTransactionStatus(txId, 'declined', meta)
-  
-  
-  };
-  
-  
+  updateTransactionStatusByTxHash: async (txHash, _status, meta) => {
+    const query = `UPDATE vpa_transactions set status = $2, meta =$3 where tx_hash = $1`;
+
+    const dbResponse = await sails
+      .getDatastore()
+      .sendNativeQuery(query, [txHash, _status, meta]);
+
+    return dbResponse.rows[0];
+  },
+  updateTransactionStatusToDeclined: (txHash, meta) => VpaTransaction.updateTransactionStatusByTxHash(txHash, 'declined', meta),
+  updateTransactionStatusToCompleted: (txHash, meta) => VpaTransaction.updateTransactionStatusByTxHash(txHash, 'completed', meta),
+
+  getTransactionFromTransactionHash: async (txHash) => {
+    const query = `SELECT * from vpa_transactions where tx_hash = $1`;
+
+    const dbResponse = await sails
+    .getDatastore()
+    .sendNativeQuery(query, [txHash]);
+
+    return dbResponse.rows[0];
+  }
+};

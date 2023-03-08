@@ -22,7 +22,7 @@
     "web-push": "^3.5.0"
   },
   "devDependencies": {
-    "eslint": "5.16.0"
+    "eslint": "8.35.0"
   },
   "scripts": {
     "start": "NODE_ENV=production node app.js --max-old-space-size=1024 --unsafe-perm=true",

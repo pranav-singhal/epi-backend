@@ -5,8 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const WalletUser = require("../models/WalletUser");
-
+const VpaTransaction = require('../models/VpaTransaction');
+const WalletUser = require('../models/WalletUser');
 
 module.exports = {
   create: async (req, res) => {
@@ -27,12 +27,12 @@ module.exports = {
 
     if (!senderDetails?.id) {
       res.status = 400;
-      return res.json({message: "invalid sender"})
+      return res.json({message: 'invalid sender'});
     }
 
     if (!recipientDetails?.id) {
       res.status = 400;
-      return res.json({message: "invalid sender"})
+      return res.json({message: 'invalid sender'});
     }
 
     sender = senderDetails.id;
@@ -86,8 +86,8 @@ module.exports = {
             from: sender
           });
         } catch(e) {
-          console.log("notification error: ", e)
-            notificationError = e;
+          console.log('notification error: ', e);
+          notificationError = e;
         }
 
       }
@@ -111,12 +111,12 @@ module.exports = {
 
     if (!senderDetails?.id) {
       res.status = 400;
-      return res.json({message: "invalid sender"})
+      return res.json({message: 'invalid sender'});
     }
 
     if (!recipientDetails?.id) {
       res.status = 400;
-      return res.json({message: "invalid recipeint"})
+      return res.json({message: 'invalid recipeint'});
     }
 
     if (qrcode) {
@@ -136,7 +136,7 @@ module.exports = {
     const senderDetails = await WalletUser.getUserByUsername(sender);
     if (!senderDetails?.id) {
       res.status = 400;
-      return res.json({message: "invalid sender"})
+      return res.json({message: 'invalid sender'});
     }
     const populateDetails = _.get(req, 'query.populate_details', false);
 
@@ -150,8 +150,10 @@ module.exports = {
     return res.json({threads});
   },
 
-  tempFunction: async () => {
-    console.log('temp function called')
+  tempFunction: async (req, res) => {
+    console.log('temp function called');
+    const fundAccounts= await VpaTransaction.getTransactionFromTransactionHash('0x1bb6126490aec6eb20e202ffbe4e9c1c6aa64ef2fcb4b2439bf0b57d00f73bd5');
+    return res.json(fundAccounts);
   }
 };
 
