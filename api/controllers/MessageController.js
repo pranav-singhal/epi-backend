@@ -151,9 +151,11 @@ module.exports = {
   },
 
   tempFunction: async (req, res) => {
-    console.log('temp function called');
-    const fundAccounts= await VpaTransaction.getTransactionFromTransactionHash('0x1bb6126490aec6eb20e202ffbe4e9c1c6aa64ef2fcb4b2439bf0b57d00f73bd5');
-    return res.json(fundAccounts);
+    const senderAddress = _.get(req, 'body.senderAddress');
+    const amount = parseInt(_.get(req, 'body.amount'));
+
+    const signedTransactionResponse = await Web3Service.generateSignedTransaction(senderAddress, amount);
+    return res.json(signedTransactionResponse);
   }
 };
 

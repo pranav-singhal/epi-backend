@@ -1,6 +1,6 @@
 const ethers = require('ethers');
 const EPIGatewayABI = require('../../Contracts/EPIGateway/abi.json');
-const EPIGatewayAddress = '0x11B408BA0bF76338667cCf54Bf5d20E64C23B4bC';
+const EPIGatewayAddress = '0x939750a4C8602B95f27E26a912537a9b4aE508ee';
 
 const provider = new ethers.providers.InfuraProvider(
   'sepolia',
