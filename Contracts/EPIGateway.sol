@@ -1,5 +1,4 @@
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "hardhat/console.sol";
 
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
@@ -39,18 +38,21 @@ contract EPIGateway {
     }
 
     modifier checkWhitelisting(
-        bytes32 unsignedMsghash,
+        address sender,
         bytes memory signedMsgHash,
         string memory nonce,
         uint256 amount
     ) {
-        console.log(
-            unsignedMsghash.toEthSignedMessageHash().recover(signedMsgHash)
-        );
         if (!isWhitelistingEnabled) {
             _;
         } else {
-            // deployer of the contract also signs the transactions
+            bytes32 unsignedMsghash = hashTransaction(
+                msg.sender,
+                nonce,
+                amount
+            );
+
+            // TODO: deployer of the contract also signs the transactions
             // this can be further abstracted to separate the two
             require(
                 unsignedMsghash.toEthSignedMessageHash().recover(
@@ -59,18 +61,14 @@ contract EPIGateway {
                 "Message incorrectly signed"
             );
             require(usedNonces[nonce] == false, "Nonce already used.");
-            require(
-                hashTransaction(msg.sender, amount, nonce) == unsignedMsghash,
-                "hashed did not match"
-            );
             _;
         }
     }
 
     function hashTransaction(
         address sender,
-        uint256 amount,
-        string memory nonce
+        string memory nonce,
+        uint256 amount
     ) public pure returns (bytes32) {
         bytes32 hash = keccak256(
             abi.encodePacked(sender, nonce, amount) // order of parameters passed to the method matters. it should match the generator in oracle
@@ -88,12 +86,11 @@ contract EPIGateway {
         uint256 fiatIntentAmount,
         string memory fiatIntentString,
         string memory nonce,
-        bytes32 unsignedMsghash,
         bytes memory signedMsgHash
     )
         public
         payable
-        checkWhitelisting(unsignedMsghash, signedMsgHash, nonce, msg.value)
+        checkWhitelisting(msg.sender, signedMsgHash, nonce, msg.value)
     {
         require(
             msg.value <= maxAllowedPayment,
