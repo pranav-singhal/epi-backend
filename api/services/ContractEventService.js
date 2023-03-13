@@ -1,6 +1,6 @@
 const ethers = require('ethers');
 const EPIGatewayABI = require('../../Contracts/EPIGateway/abi.json');
-const EPIGatewayAddress = '0x939750a4C8602B95f27E26a912537a9b4aE508ee';
+const EPIGatewayAddress = _.get(sails, 'config.epigateway.address');
 const fetch = require('node-fetch');
 const _ = require('@sailshq/lodash');
 const VpaTransaction = require('../models/VpaTransaction');
