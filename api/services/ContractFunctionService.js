@@ -1,4 +1,5 @@
 const ethers = require('ethers');
+const _ = require('@sailshq/lodash');
 const EPIGatewayABI = require('../../Contracts/EPIGateway/abi.json');
 const EPIGatewayAddress = _.get(sails, 'config.epigateway.address');
 

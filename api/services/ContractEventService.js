@@ -1,9 +1,10 @@
 const ethers = require('ethers');
+const _ = require('@sailshq/lodash');
+const fetch = require('node-fetch');
+
+const VpaTransaction = require('../models/VpaTransaction');
 const EPIGatewayABI = require('../../Contracts/EPIGateway/abi.json');
 const EPIGatewayAddress = _.get(sails, 'config.epigateway.address');
-const fetch = require('node-fetch');
-const _ = require('@sailshq/lodash');
-const VpaTransaction = require('../models/VpaTransaction');
 
 const provider = new ethers.providers.WebSocketProvider(
     'wss://sepolia.infura.io/ws/v3/3e3bc546283842be8c2f1a9bcb2e1885'
