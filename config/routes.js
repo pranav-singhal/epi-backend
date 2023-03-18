@@ -30,7 +30,9 @@ module.exports.routes = {
   'POST /user/subscription': 'UserSubscriptionController.create', // done
   'GET /user/:username/subscription': 'UserSubscriptionController.get', // done
   'POST /temp': 'MessageController.tempFunction', // done
-  'GET /users/:username' : 'UserController.getUserByUsername' // done
+  'GET /users/:username' : 'UserController.getUserByUsername', // done,
+  'POST /payout/vpa/validate': 'PayoutController.validateVpa',
+  'POST /payout/transaction/generate': 'PayoutController.generateSignatureForTransaction'
 
 
   /***************************************************************************
