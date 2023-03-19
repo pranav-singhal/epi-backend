@@ -41,6 +41,10 @@ const TOLERANCE = {
   'INR': 1
 }; // allowed discrepancy in fiat between intended amount and actual amount;
 
+const getAmountAfterReducingFees = (_sentAmountInEth) => {
+  return _sentAmountInEth *0.99; // current fees set at 1%
+};
+
 module.exports = {
 
   handlePaymentEvent: async () => {
@@ -49,9 +53,11 @@ module.exports = {
     const contract = new ethers.Contract(EPIGatewayAddress, EPIGatewayABI, provider);
 
     contract.on('PaymentReceived', async (sender, receiver, amountInEth,fiatAmount, fiatCurrency,  ...argLast) => {
-      const formattedAmountInEth = ethers.utils.formatEther( amountInEth );
-      const transactionHash = _.get(argLast, '0.transactionHash', '');
 
+      const formattedAmountInEth = ethers.utils.formatEther( amountInEth );
+      const intendedAmountInEth = getAmountAfterReducingFees(formattedAmountInEth); // adjusted for fees
+
+      const transactionHash = _.get(argLast, '0.transactionHash', '');
       const pendingTransaction = await VpaTransaction.getTransactionFromTransactionHash(transactionHash);
       const isTransactionAlreadyRecorded = Boolean(pendingTransaction);
 
@@ -64,15 +70,15 @@ module.exports = {
         return { success: false, message: 'transaction already recorded' };
       }
 
-      const ethToInr = await convertEthToInr(formattedAmountInEth);
+      const ethToInr = await convertEthToInr(intendedAmountInEth);
       const intendedAmountInInr = convertBigNumberToInr(fiatAmount);
-      const diff = Math.abs(ethToInr - intendedAmountInInr);
+      const diff = Math.abs(ethToInr - parseFloat(intendedAmountInInr));
 
       if (diff < TOLERANCE[fiatCurrency]) {
         try {
           const responseFromTable = await VpaTransaction.addEthToInrPendingTransaction(
             transactionHash,
-            formattedAmountInEth,
+            intendedAmountInEth,
             intendedAmountInInr
           );
 
