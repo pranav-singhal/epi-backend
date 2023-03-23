@@ -6,8 +6,8 @@ const VpaTransaction = require('../models/VpaTransaction');
 const EPIGatewayABI = require('../../Contracts/EPIGateway/abi.json');
 const EPIGatewayAddress = _.get(sails, 'config.epigateway.address');
 
-const provider = new ethers.providers.WebSocketProvider(
-    'wss://sepolia.infura.io/ws/v3/3e3bc546283842be8c2f1a9bcb2e1885'
+const provider = new ethers.providers.InfuraWebSocketProvider(
+  'sepolia', '3e3bc546283842be8c2f1a9bcb2e1885'
 );
 
 const getEthToInr = async () => {
@@ -42,7 +42,7 @@ const TOLERANCE = {
 }; // allowed discrepancy in fiat between intended amount and actual amount;
 
 const getAmountAfterReducingFees = (_sentAmountInEth) => {
-  return _sentAmountInEth *0.99; // current fees set at 1%
+  return _sentAmountInEth * 0.99; // current fees set at 1%
 };
 
 module.exports = {
@@ -52,84 +52,85 @@ module.exports = {
 
     const contract = new ethers.Contract(EPIGatewayAddress, EPIGatewayABI, provider);
 
-    contract.on('PaymentReceived', async (sender, receiver, amountInEth,fiatAmount, fiatCurrency,  ...argLast) => {
+    // contract.on('PaymentReceived', async (sender, receiver, amountInEth, fiatAmount, fiatCurrency, ...argLast) => {
 
-      const formattedAmountInEth = ethers.utils.formatEther( amountInEth );
-      const intendedAmountInEth = getAmountAfterReducingFees(formattedAmountInEth); // adjusted for fees
+    //   const formattedAmountInEth = ethers.utils.formatEther(amountInEth);
+    //   const intendedAmountInEth = getAmountAfterReducingFees(formattedAmountInEth); // adjusted for fees
 
-      const transactionHash = _.get(argLast, '0.transactionHash', '');
-      const pendingTransaction = await VpaTransaction.getTransactionFromTransactionHash(transactionHash);
-      const isTransactionAlreadyRecorded = Boolean(pendingTransaction);
+    //   const transactionHash = _.get(argLast, '0.transactionHash', '');
+    //   const pendingTransaction = await VpaTransaction.getTransactionFromTransactionHash(transactionHash);
+    //   const isTransactionAlreadyRecorded = Boolean(pendingTransaction);
 
-      /**
-       * This is added to ensure if there are two parallel event listeners
-       * for this contract, only one acts on an event at one time
-       */
-      if (isTransactionAlreadyRecorded) {
+    //   /**
+    //    * This is added to ensure if there are two parallel event listeners
+    //    * for this contract, only one acts on an event at one time
+    //    */
+    //   if (isTransactionAlreadyRecorded) {
 
-        return { success: false, message: 'transaction already recorded' };
-      }
+    //     return { success: false, message: 'transaction already recorded' };
+    //   }
 
-      const ethToInr = await convertEthToInr(intendedAmountInEth);
-      const intendedAmountInInr = convertBigNumberToInr(fiatAmount);
-      const diff = Math.abs(ethToInr - parseFloat(intendedAmountInInr));
+    //   const ethToInr = await convertEthToInr(intendedAmountInEth);
+    //   const intendedAmountInInr = convertBigNumberToInr(fiatAmount);
+    //   const diff = Math.abs(ethToInr - parseFloat(intendedAmountInInr));
 
-      if (diff < TOLERANCE[fiatCurrency]) {
-        try {
-          const responseFromTable = await VpaTransaction.addEthToInrPendingTransaction(
-            transactionHash,
-            intendedAmountInEth,
-            intendedAmountInInr
-          );
+    //   if (diff < TOLERANCE[fiatCurrency]) {
+    //     try {
+    //       VpaTransaction.addEthToInrPendingTransaction(
+    //         transactionHash,
+    //         intendedAmountInEth,
+    //         intendedAmountInInr
+    //       );
 
-          const payoutResponse = await FiatService.initiatePayout(
-            receiver,
-            intendedAmountInInr
-          );
+    //       const payoutResponse = await FiatService.initiatePayout(
+    //         receiver,
+    //         intendedAmountInInr
+    //       );
 
-          if (!payoutResponse?.success) {
+    //       if (!payoutResponse?.success) {
 
-            await ContractFunctionService.revertTransaction(transactionHash, sender);
+    //         await ContractFunctionService.revertTransaction(transactionHash, sender);
 
-            await VpaTransaction.updateTransactionStatusToDeclined(
-              transactionHash,
-              { message: payoutResponse?.message || 'Your transaction was reverted'}
-            );
+    //         await VpaTransaction.updateTransactionStatusToDeclined(
+    //           transactionHash,
+    //           { message: payoutResponse?.message || 'Your transaction was reverted' }
+    //         );
 
-            return { success: false, message: payoutResponse?.message };
-          }
+    //         return { success: false, message: payoutResponse?.message };
+    //       }
 
-          // update the entry in the table  to completed
-          await VpaTransaction.updateTransactionStatusToCompleted(transactionHash,
-            {
-              message: payoutResponse?.message || 'Your transaction was successful'
-            }
-          );
+    //       // update the entry in the table  to completed
+    //       await VpaTransaction.updateTransactionStatusToCompleted(transactionHash,
+    //         {
+    //           message: payoutResponse?.message || 'Your transaction was successful'
+    //         }
+    //       );
 
-          return { success: true, message: payoutResponse?.message };
-        } catch (e) {
-          console.log('*** Error: ', JSON.stringify(e));
-          await ContractFunctionService.revertTransaction(transactionHash, sender);
+    //       console.log(`Success: Payout successful for: ${transactionHash} `)
+    //       return { success: true, message: payoutResponse?.message };
+    //     } catch (e) {
+    //       console.log('*** Error: ', JSON.stringify(e));
+    //       await ContractFunctionService.revertTransaction(transactionHash, sender);
 
-          await VpaTransaction.updateTransactionStatusToDeclined(
-            transactionHash,
-            { message: payoutResponse?.message || 'Your transaction was reverted'}
-          );
+    //       await VpaTransaction.updateTransactionStatusToDeclined(
+    //         transactionHash,
+    //         { message: payoutResponse?.message || 'Your transaction was reverted' }
+    //       );
 
-          await VpaTransaction.updateTransactionStatusToDeclined(
-            transactionHash,
-            { message: 'Unknown error occured'}
-          );
-        }
-      }
+    //       await VpaTransaction.updateTransactionStatusToDeclined(
+    //         transactionHash,
+    //         { message: 'Unknown error occured' }
+    //       );
+    //     }
+    //   }
 
-      await ContractFunctionService.revertTransaction(transactionHash, sender);
+    //   await ContractFunctionService.revertTransaction(transactionHash, sender);
 
-      await VpaTransaction.updateTransactionStatusToDeclined(
-        transactionHash,
-        { message: 'Unknown error occured'}
-      );
+    //   await VpaTransaction.updateTransactionStatusToDeclined(
+    //     transactionHash,
+    //     { message: 'Unknown error occured' }
+    //   );
 
-    });
+    // });
   }
 };

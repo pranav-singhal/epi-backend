@@ -9,11 +9,11 @@
  * https://sailsjs.com/config/bootstrap
  */
 
-module.exports.bootstrap = async function() {
-  sails.on('lifted', function() {
+module.exports.bootstrap = async function () {
+  sails.on('lifted', function () {
     console.log('I am lifted');
-    ContractEventService.handlePaymentEvent()
- });
+    // ContractEventService.handlePaymentEvent()
+  });
   // By convention, this is a good place to set up fake data during development.
   //
   // For example:
