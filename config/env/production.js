@@ -109,6 +109,43 @@
   contractadminwallet: {
     pvtkey: ''
   },
+  chains: {
+    sepolia: {
+      gateway: {
+        contract: {
+          address: '0x6586096f929404274aeb8fd470dBf1a176DF181a',
+          admin: {
+            pvtkey: ''
+          }
+        }
+      },
+      default: true,
+      identifier: 'sepolia',
+      id: 11155111,
+      infura: {
+        network: 'sepolia',
+        apikey: '3e3bc546283842be8c2f1a9bcb2e1885'
+      }
+    },
+    mumbai: {
+      infura: {
+        network: 'polygon-mumbai',
+        apikey: '3e3bc546283842be8c2f1a9bcb2e1885'
+      },
+      gateway: {
+        contract: {
+          address: '0x6586096f929404274aeb8fd470dBf1a176DF181a',
+          admin: {
+            pvtkey: ''
+          }
+        }
+      },
+      default: false,
+      id: 80001,
+      identifier: 'mumbai'
+    },
+  },
+
   epigateway: {
     address: ''
   },

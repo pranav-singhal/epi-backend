@@ -147,3 +147,9 @@ module.exports = {
 
   convertValidVpaToName: (_vpa) => _vpa.split('@')[0]
 };
+
+// TODO - add an end-point to get contract addresses along with chain numbers
+// TODO - modify PayoutController.processTransactionEvents to take in chain ID
+// TODO - in ContractFunctionService, load providers and signers for all chains in the config
+//         POLYGON_NETWORK = "polygon-mumbai" - this is the netowrk name for polygon testnet
+//         To be used for launching multiple providers and signers

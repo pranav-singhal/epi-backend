@@ -6,17 +6,6 @@
  */
 
 module.exports = {
-//   CREATE TABLE vpa_transactions(
-//     ID INT PRIMARY KEY NOT null,
-//     tx_hash text not null,
-//     crypto_amount numeric not null,
-//     crypto_name text not null,
-//     fiat_amount numeric not null,
-//     fiat_name text not null,
-//     status text not null,
-//     meta json
-//  );
-
   addTransaction: async ({txHash, crypto_amount, crypto_name, fiat_amount, fiat_name, status, meta}) => {
     const query = `INSERT INTO vpa_transactions ("tx_hash", "crypto_amount", "crypto_name", "fiat_amount", "fiat_name", "status", "meta") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
     const dbResponse = await sails
@@ -60,12 +49,12 @@ module.exports = {
   updateTransactionStatusToDeclined: (txHash, meta) => VpaTransaction.updateTransactionStatusByTxHash(txHash, 'declined', meta),
   updateTransactionStatusToCompleted: (txHash, meta) => VpaTransaction.updateTransactionStatusByTxHash(txHash, 'completed', meta),
 
-  getTransactionFromTransactionHash: async (txHash) => {
-    const query = `SELECT * from vpa_transactions where tx_hash = $1`;
+  getTransactionFromTransactionHash: async (txHash, chainId) => {
+    const query = `SELECT * from vpa_transactions where tx_hash = $1 AND chain_id = $2`;
 
     const dbResponse = await sails
     .getDatastore()
-    .sendNativeQuery(query, [txHash]);
+    .sendNativeQuery(query, [txHash, chainId]);
 
     return dbResponse.rows[0];
   }

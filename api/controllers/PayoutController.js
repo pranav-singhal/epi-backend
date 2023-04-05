@@ -3,9 +3,7 @@ const fetch = require('node-fetch');
 
 const ethers = require('ethers');
 
-const provider = new ethers.providers.InfuraWebSocketProvider(
-  'sepolia', '3e3bc546283842be8c2f1a9bcb2e1885'
-);
+const DEFAULT_CHAIN = _.find(sails.config.chains, 'default').identifier;
 
 const getEthToInr = async () => {
   try {
@@ -33,8 +31,6 @@ const convertEthToInr = async (eth) => {
   return ethToInr * ethAmount;
 };
 
-const convertBigNumberToInr = (_bigNumber) => ethers.utils.formatUnits(_bigNumber, 0);
-
 const getAmountAfterReducingFees = (_sentAmountInEth) => {
   return _sentAmountInEth * 0.99; // current fees set at 1%
 };
@@ -56,15 +52,24 @@ module.exports = {
   generateSignatureForTransaction: async (req, res) => {
     const senderAddress = _.get(req, 'body.senderAddress');
     const amount = _.get(req, 'body.amount');
+    const chain = _.get(req, 'body.chain', DEFAULT_CHAIN);
 
-    const signedTransactionResponse = await Web3Service.generateSignedTransaction(senderAddress, amount);
+    const signedTransactionResponse = await Web3Service.generateSignedTransaction(senderAddress, amount, chain);
     return res.json(signedTransactionResponse);
   },
 
   processTransactionEvents: async (req, res) => {
     // todo - add a check that transaction has is for the right contract address
     const transactionHash = _.get(req, 'body.txHash');
-    const pendingTransaction = await VpaTransaction.getTransactionFromTransactionHash(transactionHash);
+    const chain = _.get(req, 'body.chain', DEFAULT_CHAIN);
+    const chainId = _.get(sails, `config.chains.${chain}.id`);
+
+    if (!_.isNumber(chainId)) {
+
+      res.status(400);
+      return res.json({success: false, message: "invalid chain passed"});
+    }
+    const pendingTransaction = await VpaTransaction.getTransactionFromTransactionHash(transactionHash, chainId);
     const isTransactionAlreadyRecorded = Boolean(pendingTransaction);
 
     /**
@@ -76,10 +81,10 @@ module.exports = {
       return res.json({ success: false, message: 'transaction already recorded' });
     }
 
-    const txRecipt = await ContractFunctionService.getTransactionDetailsFromHash(transactionHash);
+    const txRecipt = await ContractFunctionService.getTransactionDetailsFromHash(transactionHash, chain);
 
     if (!txRecipt) {
-      return res.json({ success: false, message: 'Invalid transaction has passed' });
+      return res.json({ success: false, message: 'Invalid transaction hash passed' });
     }
 
     const logs = txRecipt.logs;
@@ -112,7 +117,7 @@ module.exports = {
         );
 
         if (!payoutResponse?.success) {
-          await ContractFunctionService.revertTransaction(transactionHash, sender);
+          await ContractFunctionService.revertTransaction(transactionHash,chain, sender);
 
           // mark the transaction as declined
           await VpaTransaction.updateTransactionStatusToDeclined(
@@ -136,7 +141,7 @@ module.exports = {
 
       } catch (error) {
         console.log('*** Error: ', JSON.stringify(error));
-        await ContractFunctionService.revertTransaction(transactionHash, sender);
+        await ContractFunctionService.revertTransaction(transactionHash, chain, sender);
         await VpaTransaction.updateTransactionStatusToDeclined(
           transactionHash,
           { message: 'Unknown error occured' }
@@ -144,7 +149,7 @@ module.exports = {
       }
     }
 
-    await ContractFunctionService.revertTransaction(transactionHash, sender);
+    await ContractFunctionService.revertTransaction(transactionHash, chain, sender);
 
     await VpaTransaction.updateTransactionStatusToDeclined(
       transactionHash,
