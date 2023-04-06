@@ -158,5 +158,11 @@ module.exports = {
 
     return res.json({ success: false, message: 'Transaction reverted' });
 
+  },
+
+  getAllPayoutContracts: async (req, res) => {
+    return res.json({
+      ...ContractFunctionService.getPayoutContractsWithAbi()
+    })
   }
 };

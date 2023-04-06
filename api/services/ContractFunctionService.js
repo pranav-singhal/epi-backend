@@ -94,6 +94,15 @@ module.exports = {
     }));
 
     return resolvedLogs;
+  },
+
+  getPayoutContractsWithAbi: () => {
+    const connectedContracts = _.reduce(sails.config.chains, (result, value, key) => {
+      result[key] = value.gateway.contract.address;
+      return result;
+    }, {});
+
+    return {contacts: connectedContracts, abi: EPIGatewayABI};
   }
 };
 
