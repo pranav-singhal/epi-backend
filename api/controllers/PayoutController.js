@@ -1,31 +1,19 @@
-// Helper Functions
+// Helper Functions start
 const fetch = require('node-fetch');
 
 const ethers = require('ethers');
 
 const DEFAULT_CHAIN = _.find(sails.config.chains, 'default').identifier;
 
-const getEthToInr = async () => {
-  try {
-    let pricingChart = await fetch('https://api.wazirx.com/sapi/v1/tickers/24hr');
-    pricingChart = await pricingChart.json();
-
-    const ethToInr = _.filter(pricingChart, (_pricingObject) => {
-      return _pricingObject.symbol === 'ethinr';
-    });
-    if (Array.isArray(ethToInr)) {
-      return ethToInr[0]?.highPrice;
-    }
-    return {};
-
-  } catch (e) {
-    console.log('Unable to fetch price: ', e);
-  }
-
+const getCryptoToInr = async (crypto, fiat) => {
+  let pricingChart = await fetch('https://api.wazirx.com/sapi/v1/tickers/24hr');
+  pricingChart = await pricingChart.json();
+  const fiatToCryptoObject = _.find(pricingChart, (_pricingObject) => _pricingObject.baseAsset === crypto && _pricingObject.quoteAsset === fiat);
+  return fiatToCryptoObject? fiatToCryptoObject.highPrice : {};
 };
 
-const convertEthToInr = async (eth) => {
-  let ethToInr = await getEthToInr();
+const convertEthToInr = async (eth, cryptoName) => {
+  let ethToInr = await getCryptoToInr(cryptoName, 'inr');
   ethToInr = parseFloat(ethToInr);
   const ethAmount = parseFloat(eth);
   return ethToInr * ethAmount;
@@ -69,6 +57,7 @@ module.exports = {
       res.status(400);
       return res.json({success: false, message: "invalid chain passed"});
     }
+
     const pendingTransaction = await VpaTransaction.getTransactionFromTransactionHash(transactionHash, chainId);
     const isTransactionAlreadyRecorded = Boolean(pendingTransaction);
 
@@ -89,16 +78,15 @@ module.exports = {
 
     const logs = txRecipt.logs;
     const parsedLogs = await ContractFunctionService.parseLogs(logs);
-
+    const cryptoName = sails.config.chains[chain].crypto.name;
     const amountInEth = ethers.utils.formatEther(_.get(parsedLogs, '0.paymentAmount.value'));
     const fiatCurrencyUnit = _.get(parsedLogs, '0.intentCurrency.value');
     const sender = _.get(parsedLogs, '0.sender.value');
     const intendedAmountInEth = getAmountAfterReducingFees(amountInEth); // adjusted for fees
 
-
     // Checking difference between the amount sent in INR and the amount sent in ETH
     // if it is withing allowed tolerance, we process the transaction
-    const ethToInr = await convertEthToInr(intendedAmountInEth);
+    const ethToInr = await convertEthToInr(intendedAmountInEth, cryptoName);
     const intendedAmountInInr = _.get(parsedLogs, '0.intentAmount.value'); // fiat amount sent in
     const diff = Math.abs(ethToInr - parseFloat(intendedAmountInInr));
     const allowedDiff = TOLERANCE[fiatCurrencyUnit] || 0;
