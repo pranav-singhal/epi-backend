@@ -102,7 +102,7 @@ module.exports = {
       return result;
     }, {});
 
-    return {contacts: connectedContracts, abi: EPIGatewayABI};
+    return {contracts: connectedContracts, abi: EPIGatewayABI};
   }
 };
 

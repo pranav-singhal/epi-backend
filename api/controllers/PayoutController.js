@@ -160,9 +160,7 @@ module.exports = {
 
   },
 
-  getAllPayoutContracts: async (req, res) => {
-    return res.json({
-      ...ContractFunctionService.getPayoutContractsWithAbi()
-    })
-  }
+  getAllPayoutContracts: async (req, res) => res.json({
+    ...ContractFunctionService.getPayoutContractsWithAbi()
+  })
 };
