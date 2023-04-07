@@ -122,6 +122,9 @@
       default: true,
       identifier: 'sepolia',
       id: 11155111,
+      crypto: {
+        name: 'eth'
+      },
       infura: {
         network: 'sepolia',
         apikey: '3e3bc546283842be8c2f1a9bcb2e1885'
@@ -131,6 +134,9 @@
       infura: {
         network: 'polygon-mumbai',
         apikey: '3e3bc546283842be8c2f1a9bcb2e1885'
+      },
+      crypto: {
+        name: 'matic'
       },
       gateway: {
         contract: {
