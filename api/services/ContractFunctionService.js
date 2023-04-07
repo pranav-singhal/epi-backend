@@ -87,9 +87,13 @@ module.exports = {
     let resolvedLogs = [];
     await Promise.all(_.map(_logs, async (_log) => {
 
-      const _resolvedLog = await contractInterface.parseLog(_log);
-      const eventObject = getParseEventValues(_resolvedLog);
-      resolvedLogs.push(eventObject);
+      try {
+        const _resolvedLog = await contractInterface.parseLog(_log);
+        const eventObject = getParseEventValues(_resolvedLog);
+        resolvedLogs.push(eventObject);
+      } catch (error) {
+        console.error(error);
+      }
 
     }));
 
