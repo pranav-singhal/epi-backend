@@ -134,7 +134,7 @@
       },
       gateway: {
         contract: {
-          address: '0x6586096f929404274aeb8fd470dBf1a176DF181a',
+          address: '0x11B408BA0bF76338667cCf54Bf5d20E64C23B4bC',
           admin: {
             pvtkey: ''
           }
