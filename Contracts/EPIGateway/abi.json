@@ -1,175 +1,201 @@
 [
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "reciever",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fiatIntentAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "fiatIntentString",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "nonce",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "signedMsgHash",
-        "type": "bytes"
-      }
-    ],
-    "name": "createInrPayout",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "oldOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnerSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "reciever",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "paymentAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "intentAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "intentCurrency",
-        "type": "string"
-      }
-    ],
-    "name": "PaymentReceived",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "txHash",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_target",
-        "type": "address"
-      }
-    ],
-    "name": "PaymentReverted",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "txHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address payable",
-        "name": "payee",
-        "type": "address"
-      }
-    ],
-    "name": "revertPayment",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bool",
-        "name": "_whitelist",
-        "type": "bool"
-      }
-    ],
-    "name": "toggleWhiteListing",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "nonce",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "hashTransaction",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  }
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "oldOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnerSet",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "reciever",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "paymentAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "intentAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "intentCurrency",
+				"type": "string"
+			}
+		],
+		"name": "PaymentReceived",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "txHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_target",
+				"type": "address"
+			}
+		],
+		"name": "PaymentReverted",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "reciever",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "fiatIntentAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "fiatIntentString",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nonce",
+				"type": "string"
+			},
+			{
+				"internalType": "bytes",
+				"name": "signedMsgHash",
+				"type": "bytes"
+			}
+		],
+		"name": "createInrPayout",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "nonce",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "hashTransaction",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "maxAllowedPayment",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "txHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address payable",
+				"name": "payee",
+				"type": "address"
+			}
+		],
+		"name": "revertPayment",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_whitelist",
+				"type": "bool"
+			}
+		],
+		"name": "toggleWhiteListing",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_newLimit",
+				"type": "uint256"
+			}
+		],
+		"name": "updateMaxAllowedLimit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
 ]

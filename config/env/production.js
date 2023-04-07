@@ -113,7 +113,7 @@
     sepolia: {
       gateway: {
         contract: {
-          address: '0x6586096f929404274aeb8fd470dBf1a176DF181a',
+          address: '0x9fB7089Fee5e789FE5a89FD894273c8a81e37d0f',
           admin: {
             pvtkey: ''
           }
