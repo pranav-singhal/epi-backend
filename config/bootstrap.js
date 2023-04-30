@@ -10,9 +10,8 @@
  */
 
 module.exports.bootstrap = async function () {
-  sails.on('lifted', function () {
+  sails.on('lifted', () => {
     console.log('I am lifted');
-    // ContractEventService.handlePaymentEvent()
   });
   // By convention, this is a good place to set up fake data during development.
   //

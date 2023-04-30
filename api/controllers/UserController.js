@@ -1,3 +1,8 @@
+const DATABASE_ERROR_CODES = {
+  notUnique: 'value already used',
+  unknown: 'unknown error occured'
+};
+
 module.exports = {
   getAll: async (req, res) => {
     const usersArray = await WalletUser.getAllUsers();
@@ -32,16 +37,36 @@ module.exports = {
   },
 
   create: async (req, res) => {
+    const reqBody = _.get(req, 'body', {});
+    const {
+      username = "",
+      address = "",
+      avatarLink = "",
+      user_type = ""
+    } = reqBody;
 
-    const newUserResponse = await WalletUser.createNewUser({
-      ...req.body
-    });
+    try {
+      const newUserResponse = await WalletService.createNewUser({
+        username, address, avatarLink, user_type
+      });
 
-    if (newUserResponse.error) {
+      if (newUserResponse.error) {
+        res.status(400);
+        const errorCode = _.get(newUserResponse, 'message.footprint.identity', 'unknown');
+        return res.json({error: {
+          message: 'Unable to create user',
+          detail: {
+            keys: _.get(newUserResponse, 'message.footprint.keys', []),
+            desc: DATABASE_ERROR_CODES[errorCode] || DATABASE_ERROR_CODES.unknown
+          }
+        }});
+      }
+
+      return res.json({user: newUserResponse});
+    } catch (err) {
       res.status(400);
-      return res.json({error: newUserResponse});
+      return res.json({error: err.message});
     }
 
-    return res.json({user: newUserResponse});
   }
 };

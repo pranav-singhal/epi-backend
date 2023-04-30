@@ -58,8 +58,7 @@ module.exports = {
       .sendNativeQuery(query, [userId]);
       return dbResponse.rows[0];
     } catch (e) {
-      return {error: true, message: e}
-    
+      return {error: true, message: e};
+    }
   }
-}
 };
