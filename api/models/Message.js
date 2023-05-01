@@ -79,7 +79,7 @@ module.exports = {
   },
 
   getThreadsWithDetails: async (sender) => {
-    const query = `SELECT wallet_user.username, wallet_user.id, wallet_user.avatar, wallet_user.address from message inner join wallet_user on (message.sender = wallet_user."id"::varchar or message.recipient = wallet_user."id"::varchar) where message.sender = $1 or message.recipient = $1`;
+    const query = `SELECT wallet_user.username, wallet_user.id, wallet_user.avatar, wallet_user.address, wallet_user.user_type from message inner join wallet_user on (message.sender = wallet_user."id"::varchar or message.recipient = wallet_user."id"::varchar) where message.sender = $1 or message.recipient = $1`;
     const dbResponse = await sails
       .getDatastore()
       .sendNativeQuery(query, [sender]);
