@@ -34,7 +34,8 @@ module.exports.routes = {
   'POST /payout/vpa/validate': 'PayoutController.validateVpa',
   'POST /payout/transaction/generate': 'PayoutController.generateSignatureForTransaction',
   'POST /payout/transaction/process': 'PayoutController.processTransactionEvents',
-  'GET /payout/contracts': 'PayoutController.getAllPayoutContracts'
+  'GET /payout/contracts': 'PayoutController.getAllPayoutContracts',
+  'POST /user/claim': 'UserController.claim'
 
 
   /***************************************************************************

@@ -24,6 +24,22 @@ module.exports = {
     return usersByUsername;
   },
 
+  claimAnonymousAddress: async (username, address) => {
+    const query = `UPDATE wallet_user set user_type= $1, username = $2 where address = $3 and user_type = $4 RETURNING *`;
+    try {
+      const dbResponse = await sails
+      .getDatastore()
+      .sendNativeQuery(query, ['user', username, address, 'anonymous_user']);
+
+      if (dbResponse?.rows?.length  === 0) {
+        throw Error("This address does not exist or is already claimed");
+      }
+      return dbResponse.rows[0];
+    } catch (e) {
+      return {error: true, message: e?.message || "unable to claim address"};
+    }
+  },
+
   createNewUser: async ({username, avatarLink, address, user_type}) => {
     const query = `INSERT into wallet_user (username, avatar, address, user_type) VALUES ($1, $2, $3, $4) RETURNING *`;
 

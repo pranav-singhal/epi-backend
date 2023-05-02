@@ -36,6 +36,32 @@ module.exports = {
     }
   },
 
+  claim: async (req, res) => {
+    const reqBody = _.get(req, 'body', {});
+    const {
+      username = '',
+      address = ''
+    } = reqBody;
+
+    if (_.isEmpty(username) || _.isEmpty(address)) {
+      res.status(400);
+      return res.json({message: "username or address cannot be empty"});
+    }
+
+    const addressClaim = await  WalletUser.claimAnonymousAddress(username, address);
+
+    if (addressClaim.error) {
+      res.status(400);
+      return res.json({
+        success:false,
+        message: addressClaim?.message || "unable to claim address"
+      });
+    }
+    return res.json({
+      success: true
+    });
+  },
+
   create: async (req, res) => {
     const reqBody = _.get(req, 'body', {});
     const {
