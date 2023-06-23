@@ -8,6 +8,7 @@
 const VpaTransaction = require('../models/VpaTransaction');
 const WalletUser = require('../models/WalletUser');
 
+
 module.exports = {
   create: async (req, res) => {
     const msgType = _.get(req.body, 'type');
@@ -24,6 +25,29 @@ module.exports = {
 
     const senderDetails = await WalletUser.getUserByUsername(sender);
     const recipientDetails = await WalletUser.getUserByUsername(recipient);
+
+    // Start: validate signature
+
+    const validationPayload = req.body;
+    const signature = req.headers['x-signature'];
+    const timestamp = req?.body?.timestamp || 0;
+    const address = senderDetails.address;
+
+    const isTimestampValid = Web3Service.validateTimestamp(timestamp);
+
+    if (!isTimestampValid) {
+      res.status = 400;
+      return res.json({message: 'Signature has expired'});
+    }
+
+    const isSignatureValid = await Web3Service.validateSignedPayload(signature, validationPayload, address);
+
+    if (!isSignatureValid) {
+      res.status = 400;
+      return res.json({message: 'Invalid signature'});
+    }
+
+    //END: validate signature
 
     if (!senderDetails?.id) {
       res.status = 400;
@@ -151,11 +175,10 @@ module.exports = {
   },
 
   tempFunction: async (req, res) => {
-    const senderAddress = _.get(req, 'body.senderAddress');
-    const amount = parseInt(_.get(req, 'body.amount'));
-
-    const signedTransactionResponse = await Web3Service.generateSignedTransaction(senderAddress, amount);
-    return res.json(signedTransactionResponse);
+    const signature = req.body.signature;
+    const payload = req.body.payload;
+    a = await Web3Service.validateSignedPayload(signature, payload, address);
+    return res.json(a);
   }
 };
 

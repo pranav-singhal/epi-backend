@@ -55,7 +55,7 @@ module.exports = {
     if (!_.isNumber(chainId)) {
 
       res.status(400);
-      return res.json({success: false, message: "invalid chain passed"});
+      return res.json({success: false, message: 'invalid chain passed'});
     }
 
     const pendingTransaction = await VpaTransaction.getTransactionFromTransactionHash(transactionHash, chainId);
