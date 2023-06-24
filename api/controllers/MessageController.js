@@ -44,7 +44,7 @@ module.exports = {
 
     if (!isSignatureValid) {
       res.status = 400;
-      return res.json({message: 'Invalid signature'});
+      return res.json({message: 'Invalid signature', sentSignature: signature});
     }
 
     //END: validate signature
