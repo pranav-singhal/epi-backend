@@ -209,6 +209,7 @@
       allRoutes: true,
       allowOrigins: '*',
       allowCredentials: false,
+      allowRequestHeaders: ['*']
     },
 
   },
