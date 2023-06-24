@@ -109,6 +109,14 @@
   contractadminwallet: {
     pvtkey: ''
   },
+  signature: {
+    verification: {
+      timestamp: {
+        tolerance: 100
+      }
+    }
+  },
+
   chains: {
     sepolia: {
       gateway: {
@@ -201,6 +209,7 @@
       allRoutes: true,
       allowOrigins: '*',
       allowCredentials: false,
+      allowRequestHeaders: ['*']
     },
 
   },
