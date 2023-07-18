@@ -8,6 +8,7 @@
 const WalletUser = require('../models/WalletUser');
 const Web3Service = require('../services/Web3Service');
 
+
 module.exports = {
   create: async (req, res) => {
     const msgType = _.get(req.body, 'type');
@@ -39,6 +40,7 @@ module.exports = {
       return res.json({message: 'Signature has expired'});
     }
 
+
     const signerAddress = await Web3Service.getSignerFromPayload(validationPayload, signature);
     const isSignatureValid = await Web3Service.validateSignedPayload(signature, validationPayload, address);
 
@@ -46,6 +48,7 @@ module.exports = {
       res.status = 400;
       return res.json({message: 'Invalid signature', sentSignature: signature});
     }
+
 
     if (senderDetails?.address !== signerAddress) {
       res.status = 400;
@@ -180,11 +183,10 @@ module.exports = {
   },
 
   tempFunction: async (req, res) => {
-    const senderAddress = _.get(req, 'body.senderAddress');
-    const amount = parseInt(_.get(req, 'body.amount'));
-
-    const signedTransactionResponse = await Web3Service.generateSignedTransaction(senderAddress, amount);
-    return res.json(signedTransactionResponse);
+    const signature = req.body.signature;
+    const payload = req.body.payload;
+    a = await Web3Service.validateSignedPayload(signature, payload, address);
+    return res.json(a);
   }
 };
 

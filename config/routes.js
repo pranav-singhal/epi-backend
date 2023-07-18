@@ -20,22 +20,24 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': { view: 'pages/homepage' },
-  'POST /message': 'MessageController.create',
-  'PUT /transaction/:id': 'TransactionController.update',
   'GET /messages': 'MessageController.getMessagesWithFilters',
   'GET /threads': 'MessageController.getThreadsForSender',
   'GET /transaction/qrcode/:id': 'TransactionController.getByQRCodeId',
   'GET /users': 'UserController.getAll',
+  'GET /user/:username/subscription': 'UserSubscriptionController.get',
+  'GET /users/:username': 'UserController.getUserByUsername',
+  'GET /payout/contracts': 'PayoutController.getAllPayoutContracts',
+
+  'POST /message': 'MessageController.create',
+  'PUT /transaction/:id': 'TransactionController.update',
   'POST /user': 'UserController.create',
   'POST /user/subscription': 'UserSubscriptionController.create',
-  'GET /user/:username/subscription': 'UserSubscriptionController.get',
-  'POST /temp': 'MessageController.tempFunction',
-  'GET /users/:username': 'UserController.getUserByUsername',
   'POST /payout/vpa/validate': 'PayoutController.validateVpa',
   'POST /payout/transaction/generate': 'PayoutController.generateSignatureForTransaction',
   'POST /payout/transaction/process': 'PayoutController.processTransactionEvents',
-  'GET /payout/contracts': 'PayoutController.getAllPayoutContracts',
-  'POST /user/claim': 'UserController.claim'
+  'POST /user/claim': 'UserController.claim',
+
+  'POST /temp': 'MessageController.tempFunction'
 
 
   /***************************************************************************
