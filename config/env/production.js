@@ -109,6 +109,14 @@
   contractadminwallet: {
     pvtkey: ''
   },
+  signature: {
+    verification: {
+      timestamp: {
+        tolerance: 100
+      }
+    }
+  },
+
   chains: {
     sepolia: {
       gateway: {
@@ -151,12 +159,6 @@
       identifier: 'mumbai'
     },
   },
-
-  epigateway: {
-    address: ''
-  },
-
-
   /**************************************************************************
    *                                                                         *
    * Always disable "shortcut" blueprint routes.                             *
@@ -201,6 +203,7 @@
       allRoutes: true,
       allowOrigins: '*',
       allowCredentials: false,
+      allowRequestHeaders: ['*']
     },
 
   },
