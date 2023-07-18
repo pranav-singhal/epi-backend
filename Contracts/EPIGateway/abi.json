@@ -1,6 +1,17 @@
 [
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_paymaster",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_oracle",
+				"type": "address"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -8,20 +19,105 @@
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
+				"indexed": false,
 				"internalType": "address",
-				"name": "oldOwner",
+				"name": "to",
 				"type": "address"
 			},
 			{
-				"indexed": true,
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "BalanceWithdrawn",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_newLimit",
+				"type": "uint256"
+			}
+		],
+		"name": "changeMaxAllowedLimit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOracle",
+				"type": "address"
+			}
+		],
+		"name": "changeOracle",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "newOwner",
 				"type": "address"
 			}
 		],
-		"name": "OwnerSet",
-		"type": "event"
+		"name": "changeOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newPaymaster",
+				"type": "address"
+			}
+		],
+		"name": "changePaymaster",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "reciever",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "fiatIntentAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "fiatIntentString",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nonce",
+				"type": "string"
+			},
+			{
+				"internalType": "bytes",
+				"name": "signedMsgHash",
+				"type": "bytes"
+			}
+		],
+		"name": "createInrPayout",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -82,34 +178,68 @@
 	{
 		"inputs": [
 			{
-				"internalType": "string",
-				"name": "reciever",
-				"type": "string"
+				"internalType": "bytes32",
+				"name": "txHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address payable",
+				"name": "payee",
+				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "fiatIntentAmount",
+				"name": "amount",
 				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "fiatIntentString",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "nonce",
-				"type": "string"
-			},
-			{
-				"internalType": "bytes",
-				"name": "signedMsgHash",
-				"type": "bytes"
 			}
 		],
-		"name": "createInrPayout",
+		"name": "revertPayment",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_newPauseStatus",
+				"type": "bool"
+			}
+		],
+		"name": "toggleContractPause",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_whitelist",
+				"type": "bool"
+			}
+		],
+		"name": "toggleWhiteListing",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -139,63 +269,6 @@
 			}
 		],
 		"stateMutability": "pure",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "maxAllowedPayment",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "txHash",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "address payable",
-				"name": "payee",
-				"type": "address"
-			}
-		],
-		"name": "revertPayment",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bool",
-				"name": "_whitelist",
-				"type": "bool"
-			}
-		],
-		"name": "toggleWhiteListing",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_newLimit",
-				"type": "uint256"
-			}
-		],
-		"name": "updateMaxAllowedLimit",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]
