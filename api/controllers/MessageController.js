@@ -5,8 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const VpaTransaction = require('../models/VpaTransaction');
 const WalletUser = require('../models/WalletUser');
+const Web3Service = require('../services/Web3Service');
 
 module.exports = {
   create: async (req, res) => {
@@ -25,6 +25,35 @@ module.exports = {
     const senderDetails = await WalletUser.getUserByUsername(sender);
     const recipientDetails = await WalletUser.getUserByUsername(recipient);
 
+    // Start: validate signature
+
+    const validationPayload = req.body;
+    const signature = req.headers['x-signature'];
+    const timestamp = req?.body?.timestamp || 0;
+    const address = senderDetails.address;
+
+    const isTimestampValid = Web3Service.validateTimestamp(timestamp);
+
+    if (!isTimestampValid) {
+      res.status = 400;
+      return res.json({message: 'Signature has expired'});
+    }
+
+    const signerAddress = await Web3Service.getSignerFromPayload(validationPayload, signature);
+    const isSignatureValid = await Web3Service.validateSignedPayload(signature, validationPayload, address);
+
+    if (!isSignatureValid) {
+      res.status = 400;
+      return res.json({message: 'Invalid signature', sentSignature: signature});
+    }
+
+    if (senderDetails?.address !== signerAddress) {
+      res.status = 400;
+      return res.json({message: 'Signer not allowed to send message for sender', sentSignature: signature});
+    }
+
+    //END: validate signature
+
     if (!senderDetails?.id) {
       res.status = 400;
       return res.json({message: 'invalid sender'});
@@ -32,7 +61,7 @@ module.exports = {
 
     if (!recipientDetails?.id) {
       res.status = 400;
-      return res.json({message: 'invalid sender'});
+      return res.json({message: 'invalid recipient'});
     }
 
     sender = senderDetails.id;

@@ -71,6 +71,15 @@ module.exports = {
       .sendNativeQuery(query, valuesArray);
 
     return dbResponse.rows[0];
+  },
+
+  getTransactionFromId: async (id) => {
+    const query = `SELECT * from transaction where "id" = $1`;
+
+    const dbResponse = await sails.getDatastore()
+    .sendNativeQuery(query, [id]);
+
+    return dbResponse.rows[0];
   }
 };
 

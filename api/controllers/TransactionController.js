@@ -5,6 +5,17 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const { getTransactionDetailsFromHash } = require("../services/ContractFunctionService");
+
+const keyBy = (collection, iteratee) => {
+  return _.reduce(collection, (result, item) => {
+    const key = _.isFunction(iteratee) ? iteratee(item) : _.get(item, iteratee);
+    result[key] = item;
+    return result;
+  }, {});
+};
+
+const chainsById = keyBy(sails.config.chains, 'id');
 
 module.exports = {
   update: async (req, res) => {
@@ -12,10 +23,18 @@ module.exports = {
     const hash = _.get(req,'body.hash', '');
     const status = _.get(req,'body.status');
 
-    const dbResponse = await Transaction.updateTransaction(txId, {
-      hash,
-      status
-    });
+    const transactionDetailsFromDb = await Transaction.getTransactionFromId(txId);
+
+    if(hash && status === 'pending') {
+      const transactionDetailsFromChain = await getTransactionDetailsFromHash(hash, chainsById[transactionDetailsFromDb.chainId]?.identifier)
+
+      const dbResponse = await Transaction.updateTransaction(txId, {
+        hash,
+        status
+      });
+    }
+    
+
     // TODO - send notification update the transaction update
 
     return res.json(dbResponse);

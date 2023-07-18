@@ -7,13 +7,18 @@ contract EPIGateway {
     using ECDSA for bytes32;
 
     address private owner;
+    address private paymaster; // allowed to withdraw all funds from contract
+    address private oracle; // allowed to revert Payouts when needed
+
     uint256 maxAllowedPayment = 1000000000000000; // 0.001
     uint256 minAllowedLimit = 0; // 0.0
     mapping(string => bool) private Fiats;
     mapping(string => bool) private usedNonces; // used to prevent replay attacks using signed messages
     bool private isWhitelistingEnabled = true;
+    bool private isPaused = true;
 
-    event OwnerSet(address indexed oldOwner, address indexed newOwner);
+    // START: EVENTS
+
     event PaymentReceived(
         address sender,
         string reciever,
@@ -21,19 +26,44 @@ contract EPIGateway {
         uint256 intentAmount,
         string intentCurrency
     );
+
     event PaymentReverted(bytes32 txHash, address _target);
 
-    constructor() {
+    event BalanceWithdrawn(address to, uint256 amount);
+
+    // END: EVENTS
+
+    constructor(address _paymaster, address _oracle) {
         owner = msg.sender; // 'msg.sender' is sender of current call, contract deployer for a constructor
-        emit OwnerSet(address(0), owner);
+        paymaster = _paymaster;
+        oracle = _oracle;
         Fiats["INR"] = true;
     }
 
-    modifier onlyOnwer() {
+    // START: MODIFIERS
+    modifier onlyOwner() {
         require(
             owner == msg.sender,
             "only Gateway admins can call this function"
         );
+        _;
+    }
+
+    modifier onlyOracle() {
+        require(oracle == msg.sender, "only Oracle can call this function");
+        _;
+    }
+
+    modifier onlyPaymaster() {
+        require(
+            paymaster == msg.sender,
+            "only Paymaster can call this function"
+        );
+        _;
+    }
+
+    modifier isEnabled() {
+        require(isPaused == false, "contract is paused");
         _;
     }
 
@@ -52,12 +82,10 @@ contract EPIGateway {
                 amount
             );
 
-            // TODO: deployer of the contract also signs the transactions
-            // this can be further abstracted to separate the two
             require(
                 unsignedMsghash.toEthSignedMessageHash().recover(
                     signedMsgHash
-                ) == owner,
+                ) == oracle,
                 "Message incorrectly signed"
             );
             require(usedNonces[nonce] == false, "Nonce already used.");
@@ -65,20 +93,54 @@ contract EPIGateway {
         }
     }
 
+    // END: MODIFIERS
+
+    // START: ADMIN FUNCTIONS
+
+    function toggleContractPause(bool _newPauseStatus) public onlyOwner {
+        isPaused = _newPauseStatus;
+    }
+
+    function toggleWhiteListing(bool _whitelist) public onlyOwner {
+        isWhitelistingEnabled = _whitelist;
+    }
+
+    function changeOracle(address newOracle) public onlyOwner {
+        oracle = newOracle;
+    }
+
+    function changeOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+
+    function changePaymaster(address newPaymaster) public onlyOwner {
+        paymaster = newPaymaster;
+    }
+
+    function changeMaxAllowedLimit(uint256 _newLimit) public onlyPaymaster {
+        maxAllowedPayment = _newLimit;
+    }
+
+    function withdraw(address payable to, uint256 amount) public onlyPaymaster {
+        require(to != address(0));
+        require(amount <= address(this).balance);
+        to.transfer(amount);
+        emit BalanceWithdrawn(to, amount);
+    }
+
+    // END: ADMIN FUNCTIONS
+
     function hashTransaction(
         address sender,
         string memory nonce,
         uint256 amount
     ) public pure returns (bytes32) {
         bytes32 hash = keccak256(
-            abi.encodePacked(sender, nonce, amount) // order of parameters passed to the method matters. it should match the generator in oracle
+            // order of parameters passed to the method matters. it should match the generator in oracle
+            abi.encodePacked(sender, nonce, amount)
         );
 
         return hash;
-    }
-
-    function toggleWhiteListing(bool _whitelist) public onlyOnwer {
-        isWhitelistingEnabled = _whitelist;
     }
 
     function createInrPayout(
@@ -91,6 +153,7 @@ contract EPIGateway {
         public
         payable
         checkWhitelisting(msg.sender, signedMsgHash, nonce, msg.value)
+        isEnabled
     {
         require(
             msg.value <= maxAllowedPayment,
@@ -115,17 +178,17 @@ contract EPIGateway {
         );
     }
 
-    function revertPayment(bytes32 txHash, address payable payee)
-        public
-        payable
-    {
-        require(msg.sender == owner, "Only admins can revert payments");
+    function revertPayment(
+        bytes32 txHash,
+        address payable payee,
+        uint256 amount
+    ) public onlyOracle isEnabled {
         require(payee != address(0));
         require(
-            msg.value > minAllowedLimit,
+            amount > minAllowedLimit,
             "Transaction value must be more than 0.0 ETH"
         );
-        payee.transfer(msg.value);
+        payee.transfer(amount);
         emit PaymentReverted(txHash, payee);
     }
 }

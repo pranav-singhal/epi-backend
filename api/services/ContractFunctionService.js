@@ -56,7 +56,7 @@ module.exports = {
     payeeAddress
   ) => {
 
-    console.log('***Error: reverting transaction for txHash:', txHash);
+    console.log('***Reverting transaction for txHash:', txHash);
 
     const txDetailsWithVaue = await ContractFunctionService.getTransactionDetailsWithValueFromHash(txHash, chain);
 
@@ -67,9 +67,9 @@ module.exports = {
        * callStatic will throw error if contract method call is likely to revert.
        * if it reverts, actual contract method call will not be made
        */
-      await connectedContracts[chain].callStatic.revertPayment(txHash, payeeAddress, { gasLimit: 100000, value: txValue });
+      await connectedContracts[chain].callStatic.revertPayment(txHash, payeeAddress, txValue, { gasLimit: 100000, value: txValue });
 
-      const tx = await connectedContracts[chain].revertPayment(txHash, payeeAddress, { gasLimit: 100000, value: txValue });
+      const tx = await connectedContracts[chain].revertPayment(txHash, payeeAddress, txValue, { gasLimit: 100000, value: txValue });
 
       return { tx };
     } else {
@@ -78,7 +78,7 @@ module.exports = {
   },
 
   getTransactionDetailsFromHash: async (_txHash, chain) => {
-    return providers[chain].getTransactionReceipt(_txHash)
+    return providers[chain].getTransactionReceipt(_txHash);
   },
 
   getTransactionDetailsWithValueFromHash: async (_txHash, chain) => providers[chain].getTransaction(_txHash),

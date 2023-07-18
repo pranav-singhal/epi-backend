@@ -21,5 +21,24 @@ module.exports = {
 
     return { unsignedMsgHash, signedMsgHash, nonce };
 
-  }
+  },
+
+  getSignerFromPayload:  (payload, signature) => {
+    // payload is flattened to remove nesting. It is then ordered so that signature can be verified
+    // if payload is not ordered and flattened, same payload will generate a different strigified value,
+    // and thus a different signature on client and server
+    const flattenedPayload = flattenObj(payload);
+    const stringifiedPayload = JSON.stringify(flattenedPayload, Object.keys(flattenedPayload).sort());
+    return ethers.utils.verifyMessage(stringifiedPayload, signature);
+  },
+
+  validateSignedPayload: async (signature, payload, address) => {
+    // payload is flattened to remove nesting. It is then ordered so that signature can be verified
+    // if payload is not ordered and flattened, same payload will generate a different strigified value,
+    // and thus a different signature on client and server
+    const signerAddr = await Web3Service.getSignerFromPayload(payload, signature);
+    return signerAddr === address;
+  },
+
+  validateTimestamp: (timestamp) => (Date.now() - timestamp < TIMESTAMP_TOLERANCE && Date.now() - timestamp >= 0)
 };
