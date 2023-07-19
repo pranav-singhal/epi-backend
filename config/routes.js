@@ -32,6 +32,7 @@ module.exports.routes = {
   'PUT /transaction/:id': 'TransactionController.update',
   'POST /user': 'UserController.create',
   'POST /user/subscription': 'UserSubscriptionController.create',
+  'GET /payout/vpa/transactions': 'PayoutController.getTransactionsForUser',
   'POST /payout/vpa/validate': 'PayoutController.validateVpa',
   'POST /payout/transaction/generate': 'PayoutController.generateSignatureForTransaction',
   'POST /payout/transaction/process': 'PayoutController.processTransactionEvents',

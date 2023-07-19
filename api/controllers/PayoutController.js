@@ -2,6 +2,7 @@
 const fetch = require('node-fetch');
 
 const ethers = require('ethers');
+const Web3Service = require('../services/Web3Service');
 
 const DEFAULT_CHAIN = _.find(sails.config.chains, 'default').identifier;
 
@@ -31,6 +32,23 @@ const TOLERANCE = {
 // Helper functions end
 
 module.exports = {
+  getTransactionsForUser: async (req, res) => {
+    const timestamp = _.get(req,'params.timestamp');
+    const signature = req.headers['x-signature'];
+
+    const isTimestampValid = Web3Service.validateTimestamp(timestamp);
+    if (!isTimestampValid) {
+      res.status = 400;
+      return res.json({message: 'Signature has expired'});
+    }
+    const signerAddress = await Web3Service.getSignerFromPayload({ timestamp }, signature);
+    const isSignatureValid = await Web3Service.validateSignedPayload(signature, { timestamp }, signerAddress);
+    if (!isSignatureValid) {
+      res.status = 400;
+      return res.json({message: 'Invalid signature', sentSignature: signature});
+    }
+
+  },
   validateVpa: async (req, res) => {
     const vpa = _.get(req, 'body.vpa');
     const vpaDetails = await FiatService.validateVpa(vpa);
@@ -96,7 +114,8 @@ module.exports = {
         await VpaTransaction.addEthToInrPendingTransaction(
           transactionHash,
           intendedAmountInEth,
-          intendedAmountInInr
+          intendedAmountInInr,
+          sender
         );
 
         const payoutResponse = await FiatService.initiatePayout(
