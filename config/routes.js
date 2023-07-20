@@ -27,12 +27,12 @@ module.exports.routes = {
   'GET /user/:username/subscription': 'UserSubscriptionController.get',
   'GET /users/:username': 'UserController.getUserByUsername',
   'GET /payout/contracts': 'PayoutController.getAllPayoutContracts',
+  'GET /payout/vpa/transactions': 'PayoutController.getTransactionsForUser',
 
   'POST /message': 'MessageController.create',
   'PUT /transaction/:id': 'TransactionController.update',
   'POST /user': 'UserController.create',
   'POST /user/subscription': 'UserSubscriptionController.create',
-  'GET /payout/vpa/transactions': 'PayoutController.getTransactionsForUser',
   'POST /payout/vpa/validate': 'PayoutController.validateVpa',
   'POST /payout/transaction/generate': 'PayoutController.generateSignatureForTransaction',
   'POST /payout/transaction/process': 'PayoutController.processTransactionEvents',

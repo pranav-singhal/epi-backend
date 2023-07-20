@@ -7,7 +7,12 @@
 
 module.exports = {
   getTransactionsForAddress: async (address) => {
-    // const query = `SELECT * from vpa_transactions where `
+    const query = `SELECT * from vpa_transactions where sender = $1`;
+    const dbResponse = await sails
+    .getDatastore()
+    .sendNativeQuery(query, [address]);
+
+    return dbResponse.rows;
   },
 
   addTransaction: async ({txHash, crypto_amount, crypto_name, fiat_amount, fiat_name, status, meta, sender}) => {

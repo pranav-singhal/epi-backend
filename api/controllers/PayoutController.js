@@ -33,7 +33,8 @@ const TOLERANCE = {
 
 module.exports = {
   getTransactionsForUser: async (req, res) => {
-    const timestamp = _.get(req,'params.timestamp');
+    let timestamp = _.get(req,'query.timestamp');
+    timestamp = parseFloat(timestamp);
     const signature = req.headers['x-signature'];
 
     const isTimestampValid = Web3Service.validateTimestamp(timestamp);
@@ -42,13 +43,12 @@ module.exports = {
       return res.json({message: 'Signature has expired'});
     }
     const signerAddress = await Web3Service.getSignerFromPayload({ timestamp }, signature);
-    const isSignatureValid = await Web3Service.validateSignedPayload(signature, { timestamp }, signerAddress);
-    if (!isSignatureValid) {
-      res.status = 400;
-      return res.json({message: 'Invalid signature', sentSignature: signature});
-    }
 
+    const transactions = await VpaTransaction.getTransactionsForAddress(signerAddress);
+    res.status = 200;
+    return res.json({ transactions });
   },
+
   validateVpa: async (req, res) => {
     const vpa = _.get(req, 'body.vpa');
     const vpaDetails = await FiatService.validateVpa(vpa);
