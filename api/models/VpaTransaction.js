@@ -33,11 +33,11 @@ module.exports = {
     return dbResponse.rows[0];
   },
 
-  addEthToInrPendingTransaction: (txHash, crypto_amount, fiat_amount, sender) => {
+  addEthToInrPendingTransaction: (txHash, crypto_amount, fiat_amount, sender, cryptoName) => {
     return VpaTransaction.addTransaction({
       txHash,
       crypto_amount,
-      crypto_name: 'ETH',
+      crypto_name: cryptoName,
       fiat_amount,
       fiat_name: 'INR',
       status: 'pending',
