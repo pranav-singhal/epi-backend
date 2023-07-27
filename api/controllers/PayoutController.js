@@ -108,6 +108,7 @@ module.exports = {
     const intendedAmountInInr = _.get(parsedLogs, '0.intentAmount.value'); // fiat amount sent in
     const diff = Math.abs(ethToInr - parseFloat(intendedAmountInInr));
     const allowedDiff = TOLERANCE[fiatCurrencyUnit] || 0;
+    const reciever = _.get(parsedLogs, '0.reciever.value');
 
     if (diff < allowedDiff) {
       try {
@@ -116,11 +117,12 @@ module.exports = {
           intendedAmountInEth,
           intendedAmountInInr,
           sender,
-          cryptoName
+          cryptoName,
+          reciever
         );
 
         const payoutResponse = await FiatService.initiatePayout(
-          _.get(parsedLogs, '0.reciever.value'), // reciever
+          reciever, // reciever
           intendedAmountInInr
         );
 
