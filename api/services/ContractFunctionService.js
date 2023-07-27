@@ -11,7 +11,7 @@ const providers = _.reduce(sails.config.chains, (result, value, key) => {
 }, {});
 
 const signers = _.reduce(sails.config.chains, (result, value, key) => {
-  result[key] = new ethers.Wallet(value.gateway.contract.admin.pvtkey);
+  result[key] = new ethers.Wallet(value.gateway.contract.admin.pvtkey, providers[key]);
 
   return result;
 }, {});
@@ -60,16 +60,16 @@ module.exports = {
 
     const txDetailsWithVaue = await ContractFunctionService.getTransactionDetailsWithValueFromHash(txHash, chain);
 
-    const txValue = parseFloat(convertBigNumberToLargeInt(txDetailsWithVaue.value));
-    if (txValue && txValue > 0) {
+    const txValue = txDetailsWithVaue.value;
+    if (txValue) {
 
       /**
        * callStatic will throw error if contract method call is likely to revert.
        * if it reverts, actual contract method call will not be made
        */
-      await connectedContracts[chain].callStatic.revertPayment(txHash, payeeAddress, txValue, { gasLimit: 100000, value: txValue });
+      await connectedContracts[chain].callStatic.revertPayment(txHash, payeeAddress, txValue, { gasLimit: 100000});
 
-      const tx = await connectedContracts[chain].revertPayment(txHash, payeeAddress, txValue, { gasLimit: 100000, value: txValue });
+      const tx = await connectedContracts[chain].revertPayment(txHash, payeeAddress, txValue, { gasLimit: 100000 });
 
       return { tx };
     } else {
