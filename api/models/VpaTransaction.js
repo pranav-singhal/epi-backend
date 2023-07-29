@@ -9,7 +9,7 @@ const getCurrentDateForTable = () => new Date(Date.now()).toISOString();
 
 module.exports = {
   getTransactionsForAddress: async (address) => {
-    const query = `SELECT * from vpa_transactions where sender = $1`;
+    const query = `SELECT * from vpa_transactions where sender = $1 order by createdat`;
     const dbResponse = await sails
     .getDatastore()
     .sendNativeQuery(query, [address]);
