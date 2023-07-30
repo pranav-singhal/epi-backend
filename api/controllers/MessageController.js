@@ -200,7 +200,9 @@ module.exports = {
   },
 
   tempFunction: async (req, res) => {
-    await NotificationService.tempFunction('dendi98');
+
+    const username = _.get(req,'body.username')
+    await NotificationService.tempFunction(username);
     return res.json(1);
   }
 };
