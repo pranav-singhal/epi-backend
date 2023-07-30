@@ -118,7 +118,8 @@ module.exports = {
           intendedAmountInInr,
           sender,
           cryptoName,
-          reciever
+          reciever,
+          chainId
         );
 
         const payoutResponse = await FiatService.initiatePayout(

@@ -17,8 +17,8 @@ module.exports = {
     return dbResponse.rows;
   },
 
-  addTransaction: async ({txHash, crypto_amount, crypto_name, fiat_amount, fiat_name, status, meta, sender, reciever}) => {
-    const query = `INSERT INTO vpa_transactions ("tx_hash", "crypto_amount", "crypto_name", "fiat_amount", "fiat_name", "status", "meta", "sender", "receiver", "createdat", "updatedat") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`;
+  addTransaction: async ({txHash, crypto_amount, crypto_name, fiat_amount, fiat_name, status, meta, sender, reciever, chainId}) => {
+    const query = `INSERT INTO vpa_transactions ("tx_hash", "crypto_amount", "crypto_name", "fiat_amount", "fiat_name", "status", "meta", "sender", "receiver", "createdat", "updatedat", "chain_id") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`;
     const dbResponse = await sails
       .getDatastore()
       .sendNativeQuery(query, [
@@ -32,13 +32,14 @@ module.exports = {
         sender,
         reciever,
         getCurrentDateForTable(),
-        getCurrentDateForTable()
+        getCurrentDateForTable(),
+        chainId
       ]);
 
     return dbResponse.rows[0];
   },
 
-  addEthToInrPendingTransaction: (txHash, crypto_amount, fiat_amount, sender, cryptoName, reciever) => {
+  addEthToInrPendingTransaction: (txHash, crypto_amount, fiat_amount, sender, cryptoName, reciever, chainId) => {
     return VpaTransaction.addTransaction({
       txHash,
       crypto_amount,
@@ -48,7 +49,8 @@ module.exports = {
       status: 'pending',
       meta: {message: 'Please wait while we process your payment'},
       sender,
-      reciever
+      reciever,
+      chainId
     });
   },
 
