@@ -6,6 +6,7 @@
  */
 
 const WalletUser = require('../models/WalletUser');
+const NotificationService = require('../services/NotificationService');
 const Web3Service = require('../services/Web3Service');
 
 const keyBy = (collection, iteratee) => {
@@ -199,10 +200,8 @@ module.exports = {
   },
 
   tempFunction: async (req, res) => {
-    const signature = req.body.signature;
-    const payload = req.body.payload;
-    a = await Web3Service.validateSignedPayload(signature, payload, address);
-    return res.json(a);
+    await NotificationService.tempFunction('dendi98');
+    return res.json(1);
   }
 };
 

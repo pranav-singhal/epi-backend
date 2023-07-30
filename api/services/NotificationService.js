@@ -110,14 +110,14 @@ module.exports = {
 
     return app.messaging()
     .send({
-      "name": "IOS Notification",
-      "data": {
-        "notificationDataKey": "notificationDataValue"
+      name: 'IOS Notification',
+      data: {
+        type
       },
-      "notification": {
+      notification: {
         "title": `EPI: new messager from ${username}`,
         "body": type === 'request' ? `Send me ${amount} Eth`: `I have sent you ${amount} Eth`,
-        "image": "https://picsum.photos/200/300"
+        "image": "https://picsum.photos/200/300",
       },
       "token": token
     })
@@ -131,7 +131,21 @@ module.exports = {
       return false
     })
   },
-  tempFunction: () => {
-    console.log("temp function")
-  }
+  tempFunction: async (username) => {
+    const userDetails = await WalletUser.getUserByUsername(username);
+    const userSubscription = await UserSubscription.getSubscriptionForUser(userDetails.id);
+    const subscriptionObj = JSON.parse(userSubscription?.subscription);
+    if (subscriptionObj) {
+      await NotificationService.sendFirebaseNotification({
+        amount:1,
+        type: 'update',
+        from: 'postman',
+        token: _.get(subscriptionObj, 'token')
+      })
+      return 1;
+    }
+
+    return 0;
+  },
+
 };
