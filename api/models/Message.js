@@ -42,18 +42,18 @@ module.exports = {
 
   },
 
-  getMessages: async (sender, recipient, chainId = 0) => {
-    const query = `Select * from message m inner join transaction t on m."transactionId" = t."id" where m."sender" = $1 and m."recipient" = $2 and t."chainId" = $3`;
+  getMessages: async (sender, recipient) => {
+    const query = `Select * from message m inner join transaction t on m."transactionId" = t."id" where m."sender" = $1 and m."recipient" = $2`;
 
     let dbResponseSentMessages = await sails
                           .getDatastore()
-                          .sendNativeQuery(query, [sender, recipient, chainId]);
+                          .sendNativeQuery(query, [sender, recipient]);
 
     dbResponseSentMessages = dbResponseSentMessages.rows;
 
     let dbResponseRecievedMessages = await sails
                           .getDatastore()
-                          .sendNativeQuery(query, [recipient, sender, chainId]);
+                          .sendNativeQuery(query, [recipient, sender]);
 
     dbResponseRecievedMessages = dbResponseRecievedMessages.rows;
     dbResponseSentMessages = _.map(dbResponseSentMessages, (_message) => {

@@ -136,7 +136,6 @@ module.exports = {
     const sender = _.get(req, 'query.sender');
     const recipient = _.get(req, 'query.recipient');
     const qrcode = _.get(req, 'query.qrcode');
-    const chainId = _.get(req, 'query.chainId');
 
     const senderDetails = await WalletUser.getUserByUsername(sender);
     const recipientDetails = await WalletUser.getUserByUsername(recipient);
@@ -157,7 +156,7 @@ module.exports = {
       return res.json({messages});
     }
 
-    const messages = await Message.getMessages(senderDetails?.id, recipientDetails?.id, chainId);
+    const messages = await Message.getMessages(senderDetails?.id, recipientDetails?.id);
 
     res.json({messages});
 
