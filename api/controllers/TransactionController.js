@@ -27,15 +27,15 @@ module.exports = {
     const transactionDetailsFromDb = await Transaction.getTransactionFromId(txId);
 
     if(hash && status === 'pending') {
-      const transactionDetailsFromChain = await getTransactionDetailsFromHash(hash, chainsById[transactionDetailsFromDb.chainId]?.identifier)
+      const chainIdentifier = chainsById[transactionDetailsFromDb.chainId]?.identifier;
+      await getTransactionDetailsFromHash(hash, chainIdentifier);
+      Web3Service.updateTransactionOnCompletion(txId, hash, chainIdentifier);
 
       dbResponse = await Transaction.updateTransaction(txId, {
         hash,
         status
       });
     }
-
-    // TODO - send notification update the transaction update
 
     return res.json(dbResponse);
   },
