@@ -8,6 +8,16 @@
 const WalletUser = require('../models/WalletUser');
 const Web3Service = require('../services/Web3Service');
 
+const keyBy = (collection, iteratee) => {
+  return _.reduce(collection, (result, item) => {
+    const key = _.isFunction(iteratee) ? iteratee(item) : _.get(item, iteratee);
+    result[key] = item;
+    return result;
+  }, {});
+};
+
+const chainsById = keyBy(sails.config.chains, 'id');
+
 
 module.exports = {
   create: async (req, res) => {
@@ -84,6 +94,13 @@ module.exports = {
         qrCodeId,
         chainId
       });
+      const chainIdentifier = chainsById[chainId]?.identifier;
+
+      Web3Service.updateTransactionOnCompletion(
+        txResponse.id,
+        txResponse.hash,
+        chainIdentifier
+      );
     }
 
     if (msgType === 'request') {
