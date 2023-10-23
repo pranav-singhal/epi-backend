@@ -5,9 +5,11 @@
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
+const getCurrentDateForTable = () => new Date(Date.now()).toISOString();
+
 module.exports = {
   getTransactionsForAddress: async (address) => {
-    const query = `SELECT * from vpa_transactions where sender = $1`;
+    const query = `SELECT * from vpa_transactions where sender = $1 order by createdat`;
     const dbResponse = await sails
     .getDatastore()
     .sendNativeQuery(query, [address]);
@@ -15,8 +17,8 @@ module.exports = {
     return dbResponse.rows;
   },
 
-  addTransaction: async ({txHash, crypto_amount, crypto_name, fiat_amount, fiat_name, status, meta, sender}) => {
-    const query = `INSERT INTO vpa_transactions ("tx_hash", "crypto_amount", "crypto_name", "fiat_amount", "fiat_name", "status", "meta", "sender") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
+  addTransaction: async ({txHash, crypto_amount, crypto_name, fiat_amount, fiat_name, status, meta, sender, reciever, chainId}) => {
+    const query = `INSERT INTO vpa_transactions ("tx_hash", "crypto_amount", "crypto_name", "fiat_amount", "fiat_name", "status", "meta", "sender", "receiver", "createdat", "updatedat", "chain_id") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`;
     const dbResponse = await sails
       .getDatastore()
       .sendNativeQuery(query, [
@@ -27,13 +29,17 @@ module.exports = {
         fiat_name,
         status,
         meta,
-        sender
+        sender,
+        reciever,
+        getCurrentDateForTable(),
+        getCurrentDateForTable(),
+        chainId
       ]);
 
     return dbResponse.rows[0];
   },
 
-  addEthToInrPendingTransaction: (txHash, crypto_amount, fiat_amount, sender, cryptoName) => {
+  addEthToInrPendingTransaction: (txHash, crypto_amount, fiat_amount, sender, cryptoName, reciever, chainId) => {
     return VpaTransaction.addTransaction({
       txHash,
       crypto_amount,
@@ -42,26 +48,28 @@ module.exports = {
       fiat_name: 'INR',
       status: 'pending',
       meta: {message: 'Please wait while we process your payment'},
-      sender
+      sender,
+      reciever,
+      chainId
     });
   },
 
   updateTransactionStatus: async (txId, _status, meta) => {
-    const query = `UPDATE vpa_transactions set status = $2, meta =$3 where id = $1`;
+    const query = `UPDATE vpa_transactions set status = $2, meta =$3, updatedat =$4 where id = $1`;
 
     const dbResponse = await sails
     .getDatastore()
-    .sendNativeQuery(query, [txId, _status, meta]);
+    .sendNativeQuery(query, [txId, _status, meta, getCurrentDateForTable()]);
 
     return dbResponse.rows[0];
   },
 
   updateTransactionStatusByTxHash: async (txHash, _status, meta) => {
-    const query = `UPDATE vpa_transactions set status = $2, meta =$3 where tx_hash = $1`;
+    const query = `UPDATE vpa_transactions set status = $2, meta =$3, updatedat =$4 where tx_hash = $1`;
 
     const dbResponse = await sails
       .getDatastore()
-      .sendNativeQuery(query, [txHash, _status, meta]);
+      .sendNativeQuery(query, [txHash, _status, meta, getCurrentDateForTable()]);
 
     return dbResponse.rows[0];
   },

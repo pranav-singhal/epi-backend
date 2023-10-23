@@ -7,6 +7,14 @@ const signers = _.reduce(sails.config.chains, (result, value, key) => {
   return result;
 }, {});
 
+const providers = _.reduce(sails.config.chains, (result, value, key) => {
+  result[key] = new ethers.providers.JsonRpcProvider(
+    `https://${value.infura.network}.infura.io/v3/${value.infura.apikey}`
+  );
+
+  return result;
+}, {});
+
 // move this to env
 const TIMESTAMP_TOLERANCE = (sails?.config?.signature?.verification?.timestamp?.tolerance || 50) *1000;
 
@@ -74,5 +82,17 @@ module.exports = {
     return signerAddr === address;
   },
 
-  validateTimestamp: (timestamp) => (Date.now() - timestamp < TIMESTAMP_TOLERANCE && Date.now() - timestamp >= 0)
+  validateTimestamp: (timestamp) => (Date.now() - timestamp < TIMESTAMP_TOLERANCE && Date.now() - timestamp >= 0),
+
+  updateTransactionOnCompletion: (txId, txHash, chain) => {
+    providers[chain].waitForTransaction(txHash)
+    .then(() => {
+
+      // TODO - fire a notification to sender when transaction has been mined;
+      Transaction.updateTransaction(txId, {
+        hash: txHash,
+        status: 'completed'
+      });
+    });
+  }
 };
