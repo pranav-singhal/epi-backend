@@ -1,21 +1,23 @@
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
 
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+
 contract EPIGateway {
     using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
 
     address private owner;
     address private paymaster; // allowed to withdraw all funds from contract
     address private oracle; // allowed to revert Payouts when needed
 
-    uint256 maxAllowedPayment = 1000000000000000; // 0.001
+    uint256 maxAllowedPayment = 20 * 10 ** 18; // 0.001
     uint256 minAllowedLimit = 0; // 0.0
     mapping(string => bool) private Fiats;
     mapping(string => bool) private usedNonces; // used to prevent replay attacks using signed messages
     bool private isWhitelistingEnabled = true;
-    bool private isPaused = true;
+    bool private isPaused = false;
 
     // START: EVENTS
 
