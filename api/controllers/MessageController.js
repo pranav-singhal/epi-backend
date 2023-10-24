@@ -9,6 +9,7 @@ const WalletUser = require('../models/WalletUser');
 const NotificationService = require('../services/NotificationService');
 const Web3Service = require('../services/Web3Service');
 
+// TODO : move these multiple defintions to a utils file
 const keyBy = (collection, iteratee) => {
   return _.reduce(collection, (result, item) => {
     const key = _.isFunction(iteratee) ? iteratee(item) : _.get(item, iteratee);

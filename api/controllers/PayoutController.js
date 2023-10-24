@@ -29,6 +29,17 @@ const TOLERANCE = {
   'INR': 1
 };
 
+// TODO : move these multiple defintions to a utils file
+const keyBy = (collection, iteratee) => {
+  return _.reduce(collection, (result, item) => {
+    const key = _.isFunction(iteratee) ? iteratee(item) : _.get(item, iteratee);
+    result[key] = item;
+    return result;
+  }, {});
+};
+
+const chainsById = keyBy(sails.config.chains, 'id');
+
 // Helper functions end
 
 module.exports = {
@@ -51,7 +62,7 @@ module.exports = {
 
   validateVpa: async (req, res) => {
     const vpa = _.get(req, 'body.vpa');
-    const vpaDetails = await FiatService.validateVpa(vpa);
+    const vpaDetails = await FiatService.validateVpa(vpa, DEFAULT_CHAIN);
     return res.json(vpaDetails);
   },
 
@@ -124,7 +135,8 @@ module.exports = {
 
         const payoutResponse = await FiatService.initiatePayout(
           reciever, // reciever
-          intendedAmountInInr
+          intendedAmountInInr,
+          chainsById[chainId].identifier
         );
 
         if (!payoutResponse?.success) {

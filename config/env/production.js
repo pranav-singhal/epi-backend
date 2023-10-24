@@ -136,6 +136,11 @@
       infura: {
         network: 'sepolia',
         apikey: '3e3bc546283842be8c2f1a9bcb2e1885'
+      },
+      payments: {
+        api: {
+          key: 'cnpwX3Rlc3RfVTQzT2lWZmtGTHpYMXo6cnJzVlRoNDNDeHFmMDVuV2RXWXVRMHNj'
+        }
       }
     },
     mumbai: {
@@ -156,7 +161,12 @@
       },
       default: false,
       id: 80001,
-      identifier: 'mumbai'
+      identifier: 'mumbai',
+      payments: {
+        api: {
+          key: 'cnpwX3Rlc3RfVTQzT2lWZmtGTHpYMXo6cnJzVlRoNDNDeHFmMDVuV2RXWXVRMHNj'
+        }
+      }
     },
   },
   /**************************************************************************
