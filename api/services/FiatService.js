@@ -13,7 +13,7 @@ const getPaymentHeadersByChain = (chain) => {
 
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Basic ${getPaymentApiKeyByChain(chain)}`  
+    'Authorization': `Basic ${getPaymentApiKeyByChain(chain)}`
   };
 };
 

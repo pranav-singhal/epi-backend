@@ -62,7 +62,8 @@ module.exports = {
 
   validateVpa: async (req, res) => {
     const vpa = _.get(req, 'body.vpa');
-    const vpaDetails = await FiatService.validateVpa(vpa, DEFAULT_CHAIN);
+    const chain = _.get(req, 'body.chain');
+    const vpaDetails = await FiatService.validateVpa(vpa, chain || DEFAULT_CHAIN);
     return res.json(vpaDetails);
   },
 
