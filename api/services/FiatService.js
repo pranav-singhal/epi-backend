@@ -1,21 +1,30 @@
 const fetch = require('node-fetch');
 
-// TODO - move this to aws env
-const RAZORPAY_API_KEY = 'cnpwX3Rlc3RfVTQzT2lWZmtGTHpYMXo6cnJzVlRoNDNDeHFmMDVuV2RXWXVRMHNj';
+const getPaymentApiKeyByChain = (chain) => {
+  const apiKey =  _.get(sails, ['config', 'chains', chain, 'payments', 'api', 'key'], '');
+  if (_.isEmpty(apiKey)) {
+    throw new Error(`API KEY NOT FOUND FOR CHAIN: ${chain}`);
+  }
+
+  return apiKey;
+};
+
+const getPaymentHeadersByChain = (chain) => {
+
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Basic ${getPaymentApiKeyByChain(chain)}`
+  };
+};
 
 const RAZORPAY_BASE_URL = 'https://api.razorpay.com/v1/';
 
-const BASE_AUTH_HEADERS = {
-  'Content-Type': 'application/json',
-  'Authorization': `Basic ${RAZORPAY_API_KEY}`
-};
-
 module.exports = {
 
-  validateVpa: async (_vpa) => {
+  validateVpa: async (_vpa, chain) => {
     const  requestOptions = {
       method: 'POST',
-      headers: BASE_AUTH_HEADERS,
+      headers: getPaymentHeadersByChain(chain),
       body: JSON.stringify({
         'vpa': _vpa
       }),
@@ -38,39 +47,39 @@ module.exports = {
     }
   },
 
-  initiatePayout: async (_vpa, amount) => {
-    const vpaDetails = await FiatService.validateVpa(_vpa);
+  initiatePayout: async (_vpa, amount, chain) => {
+    const vpaDetails = await FiatService.validateVpa(_vpa, chain);
 
     if (!vpaDetails?.success) {
       return { success: false, message: 'invalid vpa passed' };
     }
 
-    let fundAccountForVpa = await FiatService.getFundAccountForVpa(_vpa);
+    let fundAccountForVpa = await FiatService.getFundAccountForVpa(_vpa, chain);
 
     if (!fundAccountForVpa) {
 
       // 1. create new customer
-      const newCustomerResponse = await FiatService.createCustomerForPayout(vpaDetails?.customer_name || FiatService.convertValidVpaToName(_vpa));
+      const newCustomerResponse = await FiatService.createCustomerForPayout(vpaDetails?.customer_name || FiatService.convertValidVpaToName(_vpa), chain);
 
       // 2. create vpa type fund account for the new customer
-      const newFundAccountResponse = await FiatService.createVpaFundAccountForCustomer(newCustomerResponse?.id, _vpa);
+      const newFundAccountResponse = await FiatService.createVpaFundAccountForCustomer(newCustomerResponse?.id, _vpa, chain);
 
       // 3. set payout target to newly created fund account
       fundAccountForVpa = newFundAccountResponse?.id;
 
     }
 
-    const payoutResponse = await FiatService.createPayoutToVpa(fundAccountForVpa, amount);
+    const payoutResponse = await FiatService.createPayoutToVpa(fundAccountForVpa, amount, chain);
 
     return { success: true, response: payoutResponse};
 
   },
 
-  fetchAllFundAccounts: async () => {
+  fetchAllFundAccounts: async (chain) => {
 
     const  requestOptions = {
       method: 'GET',
-      headers: BASE_AUTH_HEADERS
+      headers: getPaymentHeadersByChain(chain)
     };
     const fundAccountsResponse = await fetch(`${RAZORPAY_BASE_URL}/fund_accounts`, requestOptions)
         .then(response => response.json());
@@ -84,16 +93,16 @@ module.exports = {
     return vpaToFundAccountMapping;
   },
 
-  getFundAccountForVpa: async (_vpa) => {
-    const vpaToFundAccountMapping = await FiatService.fetchAllFundAccounts();
+  getFundAccountForVpa: async (_vpa, chain) => {
+    const vpaToFundAccountMapping = await FiatService.fetchAllFundAccounts(chain);
     return vpaToFundAccountMapping[_vpa];
   },
 
-  createPayoutToVpa: async (_fundAccountId, _amount) => {
+  createPayoutToVpa: async (_fundAccountId, _amount, chain) => {
 
     const requestOptions = {
       method: 'POST',
-      headers: BASE_AUTH_HEADERS,
+      headers: getPaymentHeadersByChain(chain),
       body: JSON.stringify({
         account_number: '2323230079872777',
         fund_account_id: _fundAccountId,
@@ -110,10 +119,10 @@ module.exports = {
 
   },
 
-  createCustomerForPayout: async (name) => {
+  createCustomerForPayout: async (name, chain) => {
     const requestOptions = {
       method: 'POST',
-      headers: BASE_AUTH_HEADERS,
+      headers: getPaymentHeadersByChain(chain),
       body: JSON.stringify({
         name,
         type: 'payout-intent'
@@ -126,11 +135,11 @@ module.exports = {
 
   },
 
-  createVpaFundAccountForCustomer: async (customerId, vpa) => {
+  createVpaFundAccountForCustomer: async (customerId, vpa, chain) => {
 
     const requestOptions = {
       method: 'POST',
-      headers: BASE_AUTH_HEADERS,
+      headers: getPaymentHeadersByChain(chain),
       body: JSON.stringify({
         contact_id: customerId,
         account_type: 'vpa',

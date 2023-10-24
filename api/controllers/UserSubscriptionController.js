@@ -52,5 +52,20 @@ module.exports = {
         
         const userSubscription = await UserSubscription.getSubscriptionForUser(userId);
         return res.json({userSubscription})
+    },
+
+    delete: async (req, res) => {
+        const username = req.param('username');
+
+        const userDetails = await WalletUser.getUserByUsername(username)
+        const userId = userDetails?.id;
+        if (!userId) {
+            res.status(400);
+            res.json({message: "user not found"})
+        }
+
+        await UserSubscription.deleteUserSubscription(userId);
+
+        return res.json({status: true})
     }
 }

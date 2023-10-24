@@ -136,6 +136,11 @@
       infura: {
         network: 'sepolia',
         apikey: '3e3bc546283842be8c2f1a9bcb2e1885'
+      },
+      payments: {
+        api: {
+          key: 'cnpwX3Rlc3RfVTQzT2lWZmtGTHpYMXo6cnJzVlRoNDNDeHFmMDVuV2RXWXVRMHNj'
+        }
       }
     },
     mumbai: {
@@ -156,7 +161,37 @@
       },
       default: false,
       id: 80001,
-      identifier: 'mumbai'
+      identifier: 'mumbai',
+      payments: {
+        api: {
+          key: 'cnpwX3Rlc3RfVTQzT2lWZmtGTHpYMXo6cnJzVlRoNDNDeHFmMDVuV2RXWXVRMHNj'
+        }
+      }
+    },
+    polygon: {
+      infura: {
+        network: 'polygon-mainnet',
+        apikey: '3e3bc546283842be8c2f1a9bcb2e1885'
+      },
+      crypto: {
+        name: 'matic'
+      },
+      gateway: {
+        contract: {
+          address: '0x71a4966E198Fde2a18C6EB2b93dcA12E6b11f8F5',
+          admin: {
+            pvtkey: ''
+          }
+        }
+      },
+      default: false,
+      id: 137,
+      identifier: 'polygon',
+      payments: {
+        api: {
+          key: 'cnpwX3Rlc3RfVTQzT2lWZmtGTHpYMXo6cnJzVlRoNDNDeHFmMDVuV2RXWXVRMHNj'
+        }
+      }
     },
   },
   /**************************************************************************

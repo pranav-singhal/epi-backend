@@ -38,6 +38,8 @@ module.exports.routes = {
   'POST /payout/transaction/process': 'PayoutController.processTransactionEvents',
   'POST /user/claim': 'UserController.claim',
 
+  'DELETE /user/:username/subscription': 'UserSubscriptionController.delete',
+
   'POST /temp': 'MessageController.tempFunction'
 
 

@@ -58,8 +58,9 @@ module.exports = {
     let messageHashBytes = ethers.utils.arrayify(unsignedMsgHash);
 
     const signedMsgHash = await signers[_chain].signMessage(messageHashBytes);
+    const signedMsgHashFromString = await signers[_chain].signMessage(unsignedMsgHash);
 
-    return { unsignedMsgHash, signedMsgHash, nonce };
+    return { unsignedMsgHash, signedMsgHash, nonce, signedMsgHashFromString };
 
   },
 

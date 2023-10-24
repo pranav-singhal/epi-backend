@@ -6,8 +6,10 @@
  */
 
 const WalletUser = require('../models/WalletUser');
+const NotificationService = require('../services/NotificationService');
 const Web3Service = require('../services/Web3Service');
 
+// TODO : move these multiple defintions to a utils file
 const keyBy = (collection, iteratee) => {
   return _.reduce(collection, (result, item) => {
     const key = _.isFunction(iteratee) ? iteratee(item) : _.get(item, iteratee);
@@ -199,10 +201,10 @@ module.exports = {
   },
 
   tempFunction: async (req, res) => {
-    const signature = req.body.signature;
-    const payload = req.body.payload;
-    a = await Web3Service.validateSignedPayload(signature, payload, address);
-    return res.json(a);
+
+    const username = _.get(req,'body.username')
+    await NotificationService.tempFunction(username);
+    return res.json(1);
   }
 };
 

@@ -44,5 +44,14 @@ module.exports = {
         .sendNativeQuery(query, [subscription, user]);
 
         return dbResponse.rows[0]
+    },
+    deleteUserSubscription: async (userId) => {
+        const query = 'DELETE from user_subscription where user_id = $1';
+
+        await sails
+            .getDatastore()
+            .sendNativeQuery(query, [userId]);
+
+        return;
     }
 }
