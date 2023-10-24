@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 const getPaymentApiKeyByChain = (chain) => {
-  const apiKey =  _.get(sails, ['config', 'chains', chain, 'payment', 'api', 'key'], '');
+  const apiKey =  _.get(sails, ['config', 'chains', chain, 'payments', 'api', 'key'], '');
   if (_.isEmpty(apiKey)) {
     throw new Error(`API KEY NOT FOUND FOR CHAIN: ${chain}`);
   }
